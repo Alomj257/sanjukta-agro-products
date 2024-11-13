@@ -45,7 +45,7 @@
 }
 
 .auth_heading{
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 600;
 }
 
@@ -66,4 +66,16 @@
 .auth_options a {
     text-decoration: none;
     color: #165ef0;
+}
+
+.otp_input_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.otp_input {
+    text-align: center;
+    font-weight: 600;
 }

@@ -4,9 +4,11 @@ import Button from '../ui/Button';
 import { MdMarkEmailRead } from "react-icons/md";
 import './auth.css';
 import BackToLogin from '../ui/BackToLogin';
+import { useNavigate } from 'react-router-dom';
 
 const ForgetPassword = () => {
     const [email, setEmail] = useState('');
+    const navigate = useNavigate();
 
     const emailChange = (event) => {
         setEmail(event.target.value);
@@ -15,6 +17,7 @@ const ForgetPassword = () => {
     const submitHandler = (event) => {
         event.preventDefault();
         console.log(email);
+        navigate('/otp/verify');
     }
 
     return (
