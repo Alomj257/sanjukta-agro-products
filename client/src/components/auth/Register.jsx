@@ -4,8 +4,10 @@ import Input from '../ui/Input';
 import { FaUserPlus } from "react-icons/fa";
 import Button from '../ui/Button';
 import BackToLogin from '../ui/BackToLogin';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
+    const navigate = useNavigate();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -27,6 +29,7 @@ const Register = () => {
         console.log(name);
         console.log(email);
         console.log(password);
+        navigate('/login')
     }
 
     return (

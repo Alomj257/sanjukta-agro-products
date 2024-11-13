@@ -79,3 +79,9 @@
     text-align: center;
     font-weight: 600;
 }
+
+.timer {
+    color: #165ef0;
+    font-size: 14px;
+    padding: 1rem 0;
+}

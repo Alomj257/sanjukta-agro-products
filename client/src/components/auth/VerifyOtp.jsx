@@ -2,9 +2,14 @@ import React, { useEffect, useRef, useState } from 'react'
 import Button from '../ui/Button'
 import BackToLogin from '../ui/BackToLogin'
 import { IoFingerPrintSharp } from "react-icons/io5";
+import Timer from './Timer';
+import { useNavigate } from 'react-router-dom';
 import './auth.css'
 
 const VerifyOtp = () => {
+
+    const navigate = useNavigate();
+
     const ref1 = useRef(null);
     const ref2 = useRef(null);
     const ref3 = useRef(null);
@@ -36,9 +41,12 @@ const VerifyOtp = () => {
         otpArray[location](event.target.value);
     }
 
-    const submitHandler= (event) => {
+    const submitHandler = (event) => {
         event.preventDefault();
-        console.log(otp1, otp2, otp3, otp4, otp5, otp6)
+        console.log(otp1, otp2, otp3, otp4, otp5, otp6);
+        const finalOTP = otp1 + otp2 + otp3 + otp4 + otp5 + otp6;
+        console.log(finalOTP);
+        navigate('/password/update')
     }
 
     return (
@@ -60,6 +68,7 @@ const VerifyOtp = () => {
                             {inputRef.map((item, index) => {
                                 return (
                                     <input
+                                        required
                                         key={index}
                                         onChange={(event) => inputChange(event, index)}
                                         ref={item}
@@ -80,6 +89,11 @@ const VerifyOtp = () => {
                     <div className="auth_action">
                         <Button>Verify OTP</Button>
                     </div>
+
+                    <div>
+                        <Timer />
+                    </div>
+
                     <div>
                         <BackToLogin />
                     </div>
