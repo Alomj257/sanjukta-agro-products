@@ -20,6 +20,12 @@ connectDB();
 // Define the port with a fallback
 const port = process.env.PORT || 3000;
 
+app.use((error, req, res, next) => {
+    const message = error.message || 'Server error';
+    const statusCode = error.statusCode || 500
+    res.status(statusCode).json({message: message})
+})
+
 // Start the server
 app.listen(port, () => {
     console.log(`Server is running at port ${port}`);

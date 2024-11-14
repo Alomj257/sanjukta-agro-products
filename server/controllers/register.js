@@ -12,7 +12,7 @@ const register = async (req, res, next) => {
         if(validationError){
             const error = new Error(validationError.details[0].message)
             error.statusCode = 400;
-            throw error
+            throw error;
         }
 
         const formatedName = name.toLowerCase();
@@ -22,7 +22,7 @@ const register = async (req, res, next) => {
         if (findUser) {
             const error = new Error('This email is already exist');
             error.statusCode = 400;
-            throw error
+            throw error;
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -38,18 +38,35 @@ const register = async (req, res, next) => {
         res.status(200).json({message: 'User registred sucessfully', status: true})
 
     } catch (error) {
-
+        next(error);
     }
 }
 
 module.exports = register;
 
+// function validateUser(data) {
+//     const userSchema = joi.object({
+//         name: joi.string().min(2).required(),
+//         email: joi.string().email().required(),
+//         password: joi.string().min(8).max(15).required()
+//     })
+
+//     return userSchema.validate(data);
+// }
+
 function validateUser(data) {
     const userSchema = joi.object({
         name: joi.string().min(2).required(),
         email: joi.string().email().required(),
-        password: joi.string().min(8).max(15).required()
-    })
+        password: joi.string()
+            .min(8).message('Password length must be at least 8 characters long')
+            .max(15).message('Password length must be less than or equal to 15 characters long')
+            .pattern(new RegExp("[a-z]")).message("Include at least one lowercase letter.")
+            .pattern(new RegExp("[A-Z]")).message("Include at least one uppercase letter.")
+            .pattern(new RegExp("\\d")).message("Include at least one number.")
+            .pattern(new RegExp("[@$!%*?&]")).message("Include at least one special character.")
+            .required()
+    });
 
     return userSchema.validate(data);
 }
