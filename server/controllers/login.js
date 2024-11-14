@@ -19,7 +19,7 @@ const login = async (req, res, next) => {
 
         const isPasswordMatched = await bcrypt.compare(password, findedUser.password);
         if (!isPasswordMatched) {
-            const error = new Error('Password do not match')
+            const error = new Error('Incorrect password')
             error.statusCode = 400
             throw error;
         }
