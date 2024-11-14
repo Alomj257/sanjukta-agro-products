@@ -5,12 +5,16 @@ import { FaUserPlus } from "react-icons/fa";
 import Button from '../ui/Button';
 import BackToLogin from '../ui/BackToLogin';
 import { useNavigate } from 'react-router-dom';
+import apis from '../../utils/apis';
+import toast from 'react-hot-toast';
+import LoadingButton from '../ui/LoadingButton';
 
 const Register = () => {
     const navigate = useNavigate();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const nameChange = (event) => {
         setName(event.target.value);
@@ -24,12 +28,39 @@ const Register = () => {
         setPassword(event.target.value);
     }
 
-    const submitHandler = (event) => {
+    const submitHandler = async (event) => {
         event.preventDefault();
-        console.log(name);
-        console.log(email);
-        console.log(password);
-        navigate('/login')
+
+        try{
+
+            setLoading(true);
+            const response = await fetch(apis().registerUser,{
+                method: 'POST',
+                body:JSON.stringify({name,email,password}),
+                headers:{'Content-Type': 'application/json'}
+            })
+
+            const result = await response.json();
+
+            setLoading(false);
+
+            if(!response.ok){
+                throw new Error(result?.message)
+            }
+
+            if(result?.status){
+                toast.success(result?.message)
+                navigate('/login')
+            }
+
+        }catch(error){
+            toast.error(error.message)
+        }
+
+        // console.log(name);
+        // console.log(email);
+        // console.log(password);
+        // navigate('/login')
     }
 
     return (
@@ -61,7 +92,7 @@ const Register = () => {
 
                     {/* Button */}
                     <div className="auth_action">
-                        <Button>Register</Button>
+                        <Button><LoadingButton loading={loading} title='Register'/></Button>
                     </div>
                     <div>
                         <BackToLogin/>

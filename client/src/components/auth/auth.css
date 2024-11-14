@@ -85,3 +85,10 @@
     font-size: 14px;
     padding: 1rem 0;
 }
+
+.auth_inner {
+    display: flex;
+    justify-content: center;
+    align-items:center ;
+    gap: 0.8rem;
+}
