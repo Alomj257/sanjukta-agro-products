@@ -13,6 +13,8 @@ const VerifyOtp = () => {
 
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const [otpTime, setOtpTime] = useState(null);
+    const [isexpire, setIsExpire] = useState(false)
 
     const ref1 = useRef(null);
     const ref2 = useRef(null);
@@ -45,38 +47,95 @@ const VerifyOtp = () => {
         otpArray[location](event.target.value);
     }
 
-    const submitHandler = async(event) => {
+    const submitHandler = async (event) => {
         event.preventDefault();
         const otp = otp1 + otp2 + otp3 + otp4 + otp5 + otp6;
 
-        try{
+        try {
             setLoading(true);
-            const response = await fetch(apis().verifyOtp,{
+            const response = await fetch(apis().verifyOtp, {
                 method: 'POST',
-                body:JSON.stringify({otp}),
-                headers:{'Content-Type': 'application/json'}
+                body: JSON.stringify({ otp }),
+                headers: { 'Content-Type': 'application/json' }
             })
 
             const result = await response.json();
 
             setLoading(false);
 
-            if(!response.ok){
+            if (!response.ok) {
                 throw new Error(result?.message)
             }
 
-            if(result?.status){
+            if (result?.status) {
                 toast.success(result?.message)
-                localStorage.setItem('accessToken', result?.token)
                 navigate('/password/update')
             }
 
-        }catch(error){
+        } catch (error) {
             toast.error(error.message)
         }
     }
-    
-    
+
+    useEffect(() => {
+        const getTime = async () => {
+
+            try {
+                const response = await fetch(apis().getOtpTime, {
+                    method: 'POST',
+                    body: JSON.stringify({ token: localStorage.getItem('passToken') }),
+                    headers: { 'Content-Type': 'application/json' }
+                })
+
+                const result = await response.json();
+
+
+                if (!response.ok) {
+                    throw new Error(result?.message)
+                }
+
+                if (result?.status) {
+                    const remainingTime = new Date(result?.sendTime).getTime() - new Date().getTime();
+
+                    if(remainingTime > 0){
+                        setOtpTime(remainingTime);
+                    }else{
+                        setIsExpire(true);
+                    }
+                }
+
+            } catch (error) {
+                toast.error(error.message)
+            }
+        }
+
+        getTime();
+    }, [])
+
+    const resendHandler = async() => {
+        try{
+            const response = await fetch(apis().forgetPassword,{
+                method: 'POST',
+                body:JSON.stringify({email: localStorage.getItem('email')}),
+                headers:{'Content-Type': 'application/json'}
+            })
+
+            const result = await response.json();
+
+            if(!response.ok){
+                throw new Error(result?.message)
+            }
+            if(result?.status){
+                toast.success(result?.message)
+                localStorage.setItem('passToken', result?.token);
+                setOtpTime(1*60*1000)
+                setIsExpire(false);
+            }
+
+        }catch(error){
+            toast.error(error.message);
+        }
+    }
 
     return (
         <div className="auth_main">
@@ -116,11 +175,11 @@ const VerifyOtp = () => {
 
                     {/* Button */}
                     <div className="auth_action">
-                        <Button><LoadingButton loading={loading} title='Verify OTP'/></Button>
+                        <Button><LoadingButton loading={loading} title='Verify OTP' /></Button>
                     </div>
 
                     <div>
-                        <Timer />
+                        {otpTime !== null && !isexpire ? <Timer setIsExpire={setIsExpire} time={otpTime}/>: <span onClick={resendHandler} className='otp_resend_action'>Resend</span>}
                     </div>
 
                     <div>

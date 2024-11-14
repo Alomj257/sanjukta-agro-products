@@ -40,6 +40,7 @@ const ForgetPassword = () => {
             if(result?.status){
                 toast.success(result?.message)
                 localStorage.setItem('passToken',result?.token);
+                localStorage.setItem('email', email);
                 navigate('/otp/verify');
             }
 

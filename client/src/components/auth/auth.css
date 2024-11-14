@@ -92,3 +92,10 @@
     align-items:center ;
     gap: 0.8rem;
 }
+
+.otp_resend_action {
+    color: #165ef0;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}

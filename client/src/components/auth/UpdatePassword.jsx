@@ -5,12 +5,16 @@ import Input from '../ui/Input'
 import { RxUpdate } from "react-icons/rx";
 import { useNavigate } from 'react-router-dom';
 import './auth.css';
+import apis from '../../utils/apis';
+import LoadingButton from '../ui/LoadingButton';
+import toast from 'react-hot-toast';
 
 const UpdatePassword = () => {
     const navigate = useNavigate();
 
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const passwordChange = (event) => {
         setPassword(event.target.value);
@@ -20,11 +24,35 @@ const UpdatePassword = () => {
         setConfirmPassword(event.target.value);
     }
 
-    const submitHandler = (event) => {
+    const submitHandler = async(event) => {
         event.preventDefault();
-        console.log(password);
-        console.log(confirmPassword);
-        navigate('/login')
+        try{
+            setLoading(true);
+            const response = await fetch(apis().passwordUpdate,{
+                method: 'POST',
+                body: JSON.stringify({password, confirmPassword, token: localStorage.getItem('passToken') }),
+                headers:{'Content-Type': 'application/json'}
+            })
+
+            const result = await response.json();
+
+            setLoading(false);
+
+            if(!response.ok){
+                throw new Error(result?.message)
+            }
+
+            if(result?.status){
+                toast.success(result?.message)
+                console.log(result)
+                navigate('/login')
+                localStorage.removeItem('email');
+                localStorage.removeItem('passToken');
+            }
+
+        }catch(error){
+            toast.error(error.message)
+        }
     }
 
     return (
@@ -52,7 +80,7 @@ const UpdatePassword = () => {
 
                     {/* Button */}
                     <div className="auth_action">
-                        <Button>Update Password</Button>
+                        <Button><LoadingButton loading={loading} title='Update Password'/></Button>
                     </div>
                     <div>
                         <BackToLogin />

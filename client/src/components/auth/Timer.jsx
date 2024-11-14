@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Countdown from 'react-countdown';
 import './auth.css';
 
-const Timer = () => {
+const Timer = ({time, setIsExpire}) => {
+  const targetTime = useMemo(() => Date.now()+ time, [time]);
   return (
     <div className='timer'>
-        <Countdown date={Date.now()+1*60*1000}/>
+        <Countdown onComplete={() => setIsExpire(true)} date={targetTime}/>
     </div>
   )
 }
