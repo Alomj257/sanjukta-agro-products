@@ -5,10 +5,14 @@ import { IoFingerPrintSharp } from "react-icons/io5";
 import Timer from './Timer';
 import { useNavigate } from 'react-router-dom';
 import './auth.css'
+import apis from '../../utils/apis';
+import toast from 'react-hot-toast';
+import LoadingButton from '../ui/LoadingButton';
 
 const VerifyOtp = () => {
 
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     const ref1 = useRef(null);
     const ref2 = useRef(null);
@@ -41,13 +45,38 @@ const VerifyOtp = () => {
         otpArray[location](event.target.value);
     }
 
-    const submitHandler = (event) => {
+    const submitHandler = async(event) => {
         event.preventDefault();
-        console.log(otp1, otp2, otp3, otp4, otp5, otp6);
-        const finalOTP = otp1 + otp2 + otp3 + otp4 + otp5 + otp6;
-        console.log(finalOTP);
-        navigate('/password/update')
+        const otp = otp1 + otp2 + otp3 + otp4 + otp5 + otp6;
+
+        try{
+            setLoading(true);
+            const response = await fetch(apis().verifyOtp,{
+                method: 'POST',
+                body:JSON.stringify({otp}),
+                headers:{'Content-Type': 'application/json'}
+            })
+
+            const result = await response.json();
+
+            setLoading(false);
+
+            if(!response.ok){
+                throw new Error(result?.message)
+            }
+
+            if(result?.status){
+                toast.success(result?.message)
+                localStorage.setItem('accessToken', result?.token)
+                navigate('/password/update')
+            }
+
+        }catch(error){
+            toast.error(error.message)
+        }
     }
+    
+    
 
     return (
         <div className="auth_main">
@@ -87,7 +116,7 @@ const VerifyOtp = () => {
 
                     {/* Button */}
                     <div className="auth_action">
-                        <Button>Verify OTP</Button>
+                        <Button><LoadingButton loading={loading} title='Verify OTP'/></Button>
                     </div>
 
                     <div>

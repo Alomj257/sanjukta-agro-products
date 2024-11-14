@@ -4,11 +4,16 @@ import Button from '../ui/Button';
 import { AiOutlineLogin } from "react-icons/ai";
 import { Link } from 'react-router-dom';
 import './auth.css'
+import toast from 'react-hot-toast';
+import apis from '../../utils/apis';
+import LoadingButton from '../ui/LoadingButton';
+
 
 const Login = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const emailChange = (event) => {
         setEmail(event.target.value);
@@ -18,8 +23,34 @@ const Login = () => {
         setPassword(event.target.value);
     }
 
-    const submitHandler = (event) => {
+    const submitHandler = async (event) => {
         event.preventDefault();
+
+        try{
+            setLoading(true);
+            const response = await fetch(apis().loginUser,{
+                method: 'POST',
+                body:JSON.stringify({email,password}),
+                headers:{'Content-Type': 'application/json'}
+            })
+
+            const result = await response.json();
+
+            setLoading(false);
+
+            if(!response.ok){
+                throw new Error(result?.message)
+            }
+
+            if(result?.status){
+                toast.success(result?.message)
+                localStorage.setItem('accessToken', result?.token)
+            }
+
+        }catch(error){
+            toast.error(error.message)
+        }
+
         console.log(email);
         console.log(password);
     }
@@ -48,7 +79,7 @@ const Login = () => {
 
                     {/* Button */}
                     <div className="auth_action">
-                        <Button>Login</Button>
+                        <Button><LoadingButton loading={loading} title='Login'/></Button>
                     </div>
 
                     <div className="auth_options">
