@@ -2,7 +2,7 @@ import { React, useState } from 'react'
 import Input from '../ui/Input';
 import Button from '../ui/Button';
 import { AiOutlineLogin } from "react-icons/ai";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './auth.css'
 import toast from 'react-hot-toast';
 import apis from '../../utils/apis';
@@ -11,6 +11,7 @@ import LoadingButton from '../ui/LoadingButton';
 
 const Login = () => {
 
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -45,6 +46,7 @@ const Login = () => {
             if(result?.status){
                 toast.success(result?.message)
                 localStorage.setItem('accessToken', result?.token)
+                navigate('/dashboard')
             }
 
         }catch(error){

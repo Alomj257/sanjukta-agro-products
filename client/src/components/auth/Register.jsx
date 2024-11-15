@@ -56,11 +56,6 @@ const Register = () => {
         }catch(error){
             toast.error(error.message)
         }
-
-        // console.log(name);
-        // console.log(email);
-        // console.log(password);
-        // navigate('/login')
     }
 
     return (
