@@ -25,7 +25,7 @@ const sendMail = (otp, email) => {
                         <span style="font-size: 24px; font-weight: bold; color: #4CAF50;">${otp}</span>
                     </div>
                     <p style="color: #555; font-size: 16px;">
-                        This OTP is valid for the next 10 minutes. If you did not request this, please ignore this email or contact our support team.
+                        This OTP is valid for the next 1 minutes. If you did not request this, please ignore this email or contact our support team.
                     </p>
                     <p style="color: #555; font-size: 16px;">
                         Best regards,<br>
