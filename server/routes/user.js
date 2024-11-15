@@ -5,6 +5,7 @@ const forgetPassword = require('../controllers/forgetPassword');
 const verifyOtp = require('../controllers/verifyOtp');
 const getOtpTime = require('../controllers/getOtpTime');
 const passwordUpdate = require('../controllers/passwordUpdate')
+const getAccess = require('../controllers/getAccess');
 
 const router = express.Router();
 
@@ -14,5 +15,6 @@ router.post('/forget/password', forgetPassword);
 router.post('/otp/verify', verifyOtp);
 router.post('/otp/time', getOtpTime);
 router.post('/password/update', passwordUpdate);
+router.post('/get/access', getAccess);
 
 module.exports = router;
