@@ -1,6 +1,6 @@
-const User = require('../models/User');
+const User = require('../../models/User');
 const crypto = require('crypto');
-const sendMail = require('../utils/sendMail');
+const sendMail = require('../../utils/sendMail');
 
 const forgetPassword = async (req, res, next) => {
     const { email } = req.body;

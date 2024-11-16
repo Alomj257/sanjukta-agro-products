@@ -1,11 +1,11 @@
 const express = require('express');
-const register = require('../controllers/register');
-const login = require('../controllers/login')
-const forgetPassword = require('../controllers/forgetPassword');
-const verifyOtp = require('../controllers/verifyOtp');
-const getOtpTime = require('../controllers/getOtpTime');
-const passwordUpdate = require('../controllers/passwordUpdate')
-const getAccess = require('../controllers/getAccess');
+const register = require('../controllers/authController/register');
+const login = require('../controllers/authController/login')
+const forgetPassword = require('../controllers/authController/forgetPassword');
+const verifyOtp = require('../controllers/authController/verifyOtp');
+const getOtpTime = require('../controllers/authController/getOtpTime');
+const passwordUpdate = require('../controllers/authController/passwordUpdate')
+const getAccess = require('../controllers/authController/getAccess');
 
 const router = express.Router();
 
