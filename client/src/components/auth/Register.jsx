@@ -14,6 +14,7 @@ const Register = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [role, setRole] = useState('user');
     const [loading, setLoading] = useState(false);
 
     const nameChange = (event) => {
@@ -28,39 +29,41 @@ const Register = () => {
         setPassword(event.target.value);
     }
 
+    const roleChange = (event) => {
+        setRole(event.target.value);
+    }
+
     const submitHandler = async (event) => {
         event.preventDefault();
 
-        try{
-
+        try {
             setLoading(true);
-            const response = await fetch(apis().registerUser,{
+            const response = await fetch(apis().registerUser, {
                 method: 'POST',
-                body:JSON.stringify({name,email,password}),
-                headers:{'Content-Type': 'application/json'}
-            })
+                body: JSON.stringify({ name, email, password, role }),
+                headers: { 'Content-Type': 'application/json' }
+            });
 
             const result = await response.json();
 
             setLoading(false);
 
-            if(!response.ok){
-                throw new Error(result?.message)
+            if (!response.ok) {
+                throw new Error(result?.message);
             }
 
-            if(result?.status){
-                toast.success(result?.message)
-                navigate('/login')
+            if (result?.status) {
+                toast.success(result?.message);
+                navigate('/login');
             }
 
-        }catch(error){
-            toast.error(error.message)
+        } catch (error) {
+            toast.error(error.message);
         }
     }
 
     return (
         <div className='auth_main'>
-
             <form onSubmit={submitHandler}>
                 <div className="auth_container">
 
@@ -71,7 +74,7 @@ const Register = () => {
                         <p className="auth_title">Create a new account</p>
                     </div>
 
-                    {/* Input fileds */}
+                    {/* Input fields */}
                     <div className="auth_item">
                         <label>Name *</label>
                         <Input onChange={nameChange} required type='text' placeholder='Enter your name' />
@@ -85,18 +88,26 @@ const Register = () => {
                         <Input onChange={passwordChange} required type='password' placeholder='Enter your password' />
                     </div>
 
+                    {/* Role Selection */}
+                    <div className="auth_item">
+                        <label>Role</label>
+                        <select onChange={roleChange} value={role} className="auth_input" required >
+                            <option value="user">user</option>
+                            <option value="admin">admin</option>
+                        </select>
+                    </div>
+
                     {/* Button */}
                     <div className="auth_action">
-                        <Button><LoadingButton loading={loading} title='Register'/></Button>
+                        <Button><LoadingButton loading={loading} title='Register' /></Button>
                     </div>
                     <div>
-                        <BackToLogin/>
+                        <BackToLogin />
                     </div>
                 </div>
             </form>
-
         </div>
     )
 }
 
-export default Register
+export default Register;

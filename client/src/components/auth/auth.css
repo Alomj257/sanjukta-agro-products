@@ -1,4 +1,4 @@
-.auth_main{
+.auth_main {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -8,12 +8,13 @@
     padding: 1rem;
     border-radius: 6px;
 }
-.auth_item{
+
+.auth_item {
     display: flex;
     flex-direction: column;
 }
 
-.auth_item label{
+.auth_item label {
     color: gray;
     font-size: 14px;
     font-weight: 500;
@@ -26,7 +27,7 @@
     gap: 1rem;
 }
 
-.auth_header{
+.auth_header {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -44,12 +45,12 @@
     color: #333;
 }
 
-.auth_heading{
+.auth_heading {
     font-size: 1.4rem;
     font-weight: 600;
 }
 
-.auth_title{
+.auth_title {
     font-size: 14px;
     color: gray;
     margin-bottom: 5px;
@@ -89,7 +90,7 @@
 .auth_inner {
     display: flex;
     justify-content: center;
-    align-items:center ;
+    align-items: center;
     gap: 0.8rem;
 }
 
@@ -98,4 +99,16 @@
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
+}
+
+.auth_input {
+    height: 40px;
+    border-radius: 4px;
+}
+
+.auth_item select {
+    max-width: 100%;
+    font-size: 14px;
+    padding: 5px;
+    box-sizing: border-box;
 }

@@ -5,7 +5,7 @@ const getAccess = async (req, res, next) => {
 
     try {
         const user = await User.findOne({ 'otp.token': token });
-        if (user.otp.token === null) {
+        if (user.otp.token == null) {
             const error = new Error('Invalid or expired token');
             error.statusCode = 401;
             throw error;
