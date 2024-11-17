@@ -9,8 +9,8 @@ import Home from './pages/Home';
 import Super from './components/Super';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import UserDashboard from './pages/user/UserDashboard';
-import AdminLayout from './components/layouts/AdminLayout';
-import UserLayout from './components/layouts/UserLayout';
+import AdminLayout from './layouts/AdminLayout';
+import UserLayout from './layouts/UserLayout';
 
 // Protects routes based on user role
 const ProtectedRoute = ({ children, requiredRole }) => {
