@@ -46,6 +46,7 @@ const Login = () => {
                 // Save token and role in localStorage
                 localStorage.setItem('accessToken', result?.token);
                 localStorage.setItem('userRole', result?.user?.role);
+                localStorage.setItem('userName', result?.user?.name);
                 // Redirect based on role
                 if (result?.user?.role === 'admin') {
                     console.log('Navigating to admin dashboard...');

@@ -11,6 +11,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import UserDashboard from './pages/user/UserDashboard';
 import AdminLayout from './layouts/AdminLayout';
 import UserLayout from './layouts/UserLayout';
+import Supplier from './pages/admin/Supplier';
 
 // Protects routes based on user role
 const ProtectedRoute = ({ children, requiredRole }) => {
@@ -42,6 +43,7 @@ const App = () => {
       {/* Protected Routes for Admin */}
       <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminLayout /></ProtectedRoute>}>
         <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="supplier" element={<Supplier/>} />
       </Route>
 
       {/* Protected Routes for User */}
