@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { FaUsers } from 'react-icons/fa';
 import { FaBars, FaPeopleGroup, FaPeopleCarryBox } from "react-icons/fa6";
 import { MdSpaceDashboard, MdInventory } from "react-icons/md";
-import { AiOutlineLogout } from "react-icons/ai";
+import { IoLogOut } from "react-icons/io5";
 import transparentLogo from '../../assets/logo.png';
 import './Sidebar.css';
 
@@ -21,12 +21,12 @@ const Sidebar = ({ role }) => {
             { name: 'Stock', path: '/admin/stock', icon: <MdInventory /> },
             { name: 'Section', path: '/admin/section', icon: <FaPeopleGroup /> },
             { name: 'New Stock', path: '/admin/stock/new', icon: <FaPeopleCarryBox /> },
-            { name: 'Logout', path: '/login', icon: <AiOutlineLogout /> },
+            { name: 'Logout', path: '/login', icon: <IoLogOut />},
         ],
         user: [
             { name: 'Dashboard', path: '/user/dashboard', icon: <MdSpaceDashboard /> },
             { name: 'Stock', path: '/user/stock', icon: <MdInventory /> },
-            { name: 'Logout', path: '/login', icon: <AiOutlineLogout /> },
+            { name: 'Logout', path: '/login', icon: <IoLogOut />},
         ],
     };
 
