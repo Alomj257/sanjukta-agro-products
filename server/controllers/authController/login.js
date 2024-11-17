@@ -56,7 +56,7 @@ const login = async (req, res, next) => {
         }
 
         const accessToken = jwt.sign(
-            { email: user.email, userId: user._id, role: user.role },
+            { email: user.email, userId: user._id, role: user.role, name: user.name },
             process.env.ACCESS_TOKEN_KEY,
             { expiresIn: '7d' }
         );
@@ -65,7 +65,7 @@ const login = async (req, res, next) => {
             message: 'Login successfully',
             status: true,
             token: accessToken,
-            user: { email: user.email, role: user.role }, // Include role here
+            user: { email: user.email, role: user.role, name: user.name }
         });
     } catch (error) {
         next(error);

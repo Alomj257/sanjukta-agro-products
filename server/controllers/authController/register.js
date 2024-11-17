@@ -53,7 +53,7 @@ const register = async (req, res, next) => {
             throw error;
         }
 
-        const formattedName = name.toLowerCase();
+        // const formattedName = name.toLowerCase();
         const formattedEmail = email.toLowerCase();
 
         const existingUser = await User.findOne({ email: formattedEmail });
@@ -66,7 +66,7 @@ const register = async (req, res, next) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = new User({
-            name: formattedName,
+            name: name, // formattedName
             email: formattedEmail,
             password: hashedPassword,
             role: role || 'user', // Default to 'user' if no role is specified
