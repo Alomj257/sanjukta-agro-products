@@ -32,5 +32,4 @@
 .admin-main-content, .user-main-content {
   flex: 1;
   overflow-y:scroll;
-  margin: 5px 5px;
 }
