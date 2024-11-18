@@ -12,7 +12,9 @@ const UserLayout = () => {
       {/* Main content */}
       <div className="user-main">
         <PanelNavigation role="User" />
-        <Outlet />
+        <div className="user-main-content">
+          <Outlet />
+        </div>
       </div>
     </div>
   );

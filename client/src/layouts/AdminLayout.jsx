@@ -12,7 +12,9 @@ const AdminLayout = () => {
       {/* Main content */}
       <div className="admin-main">
         <PanelNavigation role="Admin" />
-        <Outlet />
+        <div className="admin-main-content">
+          <Outlet />
+        </div>
       </div>
     </div>
   );
