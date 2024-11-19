@@ -6,17 +6,6 @@ import { MdEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
 
-const customStyles = {
-    headCells: {
-        style: {
-            backgroundColor: '#dad8d8',
-            color: 'black',
-            fontSize: '17px',
-            fontWeight: '600'
-        }
-    },
-}
-
 const SupplierTable = () => {
     const navigate = useNavigate();
 
@@ -76,10 +65,10 @@ const SupplierTable = () => {
     const [data, setData] = useState([
         {
             id: 1,
-            supplierName: 'Supplier A',
-            supplierAddress: 'Address A',
-            category: 'Electronics',
-            itemName: 'Item 1',
+            supplierName: 'Jahangir Alom',
+            supplierAddress: 'Latu, Karimganj, Assam',
+            category: 'Food',
+            itemName: 'Suger',
             itemQuantity: 10,
             pricePerItem: 50,
             totalPrice: 500,
@@ -131,7 +120,7 @@ const SupplierTable = () => {
                 <input type="text" placeholder='Search supplier by name' onChange={handleSearch} />
                 <button className='supplierBtn' onClick={handleAddSupplierClick}>Add Supplier</button>
             </div>
-            <DataTable columns={columns} data={records} customStyles={customStyles} />
+            <DataTable columns={columns} data={records} />
         </div>
     );
 };

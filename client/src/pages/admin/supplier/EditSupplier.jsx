@@ -1,8 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './supplier-style.css';
+import Input from '../../../components/ui/Input';
+import Button from '../../../components/ui/Button';
+import LoadingButton from '../../../components/ui/LoadingButton';
 
-const EditSupplier = ({ supplier, onUpdate }) => {
-    const [formData, setFormData] = useState({ ...supplier });
+const EditSupplier = ({ supplierData, onUpdate }) => {
+    const [formData, setFormData] = useState({
+        supplierName: '',
+        supplierAddress: '',
+        category: '',
+        itemName: '',
+        itemQuantity: '',
+        pricePerItem: '',
+        totalPrice: 0,
+    });
+
+    useEffect(() => {
+        if (supplierData) {
+            setFormData({
+                ...supplierData,
+                totalPrice: supplierData.itemQuantity * supplierData.pricePerItem || 0,
+            });
+        }
+    }, [supplierData]);
+
+    useEffect(() => {
+        const totalPrice = formData.itemQuantity * formData.pricePerItem;
+        setFormData(prevFormData => ({
+            ...prevFormData,
+            totalPrice: totalPrice || 0,
+        }));
+    }, [formData.itemQuantity, formData.pricePerItem]);
 
     const handleChange = (e) => {
         setFormData({
@@ -13,33 +41,104 @@ const EditSupplier = ({ supplier, onUpdate }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onUpdate({ ...formData, totalPrice: formData.itemQuantity * formData.pricePerItem });
-        alert('Supplier updated successfully!');
+        onUpdate({ ...formData });
+        alert('Supplier details updated successfully!');
     };
 
     return (
-        <div className='edit-supplier-container'>
-            <h2>Edit Supplier</h2>
+        <div className='suppier_main'>
+            <h2 className='supplier_header'>Supplier / Edit</h2>
             <form onSubmit={handleSubmit}>
-                <label>Supplier Name:</label>
-                <input type="text" name="supplierName" value={formData.supplierName} onChange={handleChange} required />
-                
-                <label>Supplier Address:</label>
-                <input type="text" name="supplierAddress" value={formData.supplierAddress} onChange={handleChange} required />
-                
-                <label>Category:</label>
-                <input type="text" name="category" value={formData.category} onChange={handleChange} required />
-                
-                <label>Item Name:</label>
-                <input type="text" name="itemName" value={formData.itemName} onChange={handleChange} required />
-                
-                <label>Quantity:</label>
-                <input type="number" name="itemQuantity" value={formData.itemQuantity} onChange={handleChange} required />
-                
-                <label>Price per Item:</label>
-                <input type="number" name="pricePerItem" value={formData.pricePerItem} onChange={handleChange} required />
-                
-                <button type="submit">Update</button>
+                <div className="row supplier_container">
+                    <div className="col-md-6 supplier_item">
+                        <label>Supplier Name *</label>
+                        <Input
+                            type="text"
+                            name="supplierName"
+                            value={formData.supplierName}
+                            onChange={handleChange}
+                            placeholder="Enter supplier name"
+                            required
+                        />
+                    </div>
+
+                    <div className="col-md-6 supplier_item">
+                        <label>Supplier Address *</label>
+                        <Input
+                            type="text"
+                            name="supplierAddress"
+                            value={formData.supplierAddress}
+                            onChange={handleChange}
+                            placeholder="Enter supplier address"
+                            required
+                        />
+                    </div>
+
+                    <div className="col-md-6 supplier_item">
+                        <label>Category *</label>
+                        <Input
+                            type="text"
+                            name="category"
+                            value={formData.category}
+                            onChange={handleChange}
+                            placeholder="Enter category"
+                            required
+                        />
+                    </div>
+
+                    <div className="col-md-6 supplier_item">
+                        <label>Item Name *</label>
+                        <Input
+                            type="text"
+                            name="itemName"
+                            value={formData.itemName}
+                            onChange={handleChange}
+                            placeholder="Sugar"
+                            required
+                        />
+                    </div>
+
+                    <div className="col-md-6 supplier_item">
+                        <label>Quantity *</label>
+                        <Input
+                            type="number"
+                            name="itemQuantity"
+                            value={formData.itemQuantity}
+                            onChange={handleChange}
+                            placeholder="10 kg"
+                            required
+                        />
+                    </div>
+
+                    <div className="col-md-6 supplier_item">
+                        <label>Price per Item *</label>
+                        <Input
+                            type="number"
+                            name="pricePerItem"
+                            value={formData.pricePerItem}
+                            onChange={handleChange}
+                            placeholder="Rs 40"
+                            required
+                        />
+                    </div>
+
+                    <div className="col-md-12 supplier_item">
+                        <label>Total Price</label>
+                        <Input
+                            type="text"
+                            name="totalPrice"
+                            value={formData.totalPrice}
+                            placeholder="Total Price"
+                            readOnly
+                        />
+                    </div>
+
+                    <div className="col-md-4 pt-4 d-flex justify-content-center align-items-center">
+                        <Button>
+                            <LoadingButton title="Update Supplier" />
+                        </Button>
+                    </div>
+                </div>
             </form>
         </div>
     );
