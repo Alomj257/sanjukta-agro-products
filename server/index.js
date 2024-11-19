@@ -3,6 +3,8 @@ const cors = require('cors');
 require('dotenv').config();  // Load environment variables
 const { connectDB } = require('./config/db');  // Import the connectDB function
 const userRoutes = require('./routes/user');
+const supplierRoutes = require('./routes/supplierRoutes')
+const stockRoutes = require('./routes/stockRoutes');
 
 // Initialize the app
 const app = express();
@@ -13,6 +15,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 app.use('/user', userRoutes);
+app.use('/suppliers', supplierRoutes);
+app.use('/stocks', stockRoutes)
 
 // Connect to MongoDB
 connectDB();
