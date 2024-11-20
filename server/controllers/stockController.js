@@ -1,4 +1,3 @@
-// controllers/stockController.js
 const Stock = require('../models/Stock');
 
 exports.addOrUpdateStock = async (category, itemName, itemQuantity) => {
@@ -9,7 +8,7 @@ exports.addOrUpdateStock = async (category, itemName, itemQuantity) => {
                 category,
                 itemName,
                 totalStock: itemQuantity,
-                sections: [{ sectionName: 'General', sectionStock: itemQuantity }]
+                sections: [{ sectionName: 'General', sectionStock: itemQuantity }],
             });
             await stock.save();
         } else {

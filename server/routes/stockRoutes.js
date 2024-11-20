@@ -1,9 +1,7 @@
-// routes/stockRoutes.js
 const express = require('express');
 const router = express.Router();
 const stockController = require('../controllers/stockController');
 
-// Add or Update stock (this can be triggered when adding/updating a supplier)
 router.post('/update-stock', async (req, res, next) => {
     try {
         const { category, itemName, itemQuantity } = req.body;
@@ -14,7 +12,6 @@ router.post('/update-stock', async (req, res, next) => {
     }
 });
 
-// Update stock quantity when item quantity changes (used when updating supplier's stock)
 router.put('/update-quantity', async (req, res, next) => {
     try {
         const { category, itemName, itemQuantityChange } = req.body;
@@ -25,7 +22,6 @@ router.put('/update-quantity', async (req, res, next) => {
     }
 });
 
-// Delete stock when supplier is deleted or item is no longer needed
 router.delete('/delete-stock', async (req, res, next) => {
     try {
         const { category, itemName, itemQuantity } = req.body;

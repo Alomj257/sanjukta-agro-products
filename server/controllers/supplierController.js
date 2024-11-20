@@ -1,4 +1,3 @@
-// controllers/supplierController.js
 const Supplier = require('../models/Supplier');
 const StockController = require('./stockController');
 const { validateSupplier } = require('../utils/validation');
@@ -12,23 +11,25 @@ exports.addSupplier = async (req, res, next) => {
     }
 
     const { supplierName, supplierAddress, category, itemName, itemQuantity, pricePerItem } = req.body;
+    const normalizedCategory = category.trim().toLowerCase();
+    const normalizedItemName = itemName.trim().toLowerCase();
     const totalPrice = pricePerItem * itemQuantity;
 
     try {
         const newSupplier = new Supplier({
             supplierName,
             supplierAddress,
-            category,
-            itemName,
+            category: normalizedCategory,
+            itemName: normalizedItemName,
             itemQuantity,
             pricePerItem,
-            totalPrice
+            totalPrice,
         });
 
         await newSupplier.save();
 
-        // Update Stock
-        await StockController.addOrUpdateStock(category, itemName, itemQuantity);
+        // Update stock
+        await StockController.addOrUpdateStock(normalizedCategory, normalizedItemName, itemQuantity);
 
         res.status(200).json({ message: 'Supplier added successfully', supplier: newSupplier });
     } catch (error) {
@@ -39,7 +40,11 @@ exports.addSupplier = async (req, res, next) => {
 exports.getAllSuppliers = async (req, res, next) => {
     try {
         const suppliers = await Supplier.find();
-        res.status(200).json(suppliers);
+        res.status(200).json({
+            message: 'Supplier list fetched successfully',
+            status: true,
+            suppliers,
+        });
     } catch (error) {
         next(error);
     }
@@ -66,21 +71,31 @@ exports.updateSupplier = async (req, res, next) => {
     }
 
     const { category, itemName, itemQuantity, pricePerItem } = req.body;
+    const normalizedCategory = category.trim().toLowerCase();
+    const normalizedItemName = itemName.trim().toLowerCase();
+
     try {
         const existingSupplier = await Supplier.findById(req.params.id);
         if (!existingSupplier) {
             return res.status(404).json({ message: 'Supplier not found' });
         }
 
-        // Calculate change in stock quantity
         const quantityChange = itemQuantity - existingSupplier.itemQuantity;
+        const totalPrice = itemQuantity * pricePerItem;
 
-        const updatedSupplier = await Supplier.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const updatedSupplier = await Supplier.findByIdAndUpdate(
+            req.params.id,
+            { ...req.body, category: normalizedCategory, itemName: normalizedItemName, totalPrice },
+            { new: true }
+        );
 
         // Update stock
-        await StockController.updateStockQuantity(category, itemName, quantityChange);
+        await StockController.updateStockQuantity(normalizedCategory, normalizedItemName, quantityChange);
 
-        res.status(200).json({ message: 'Supplier updated successfully', supplier: updatedSupplier });
+        res.status(200).json({
+            message: 'Supplier updated successfully',
+            supplier: updatedSupplier,
+        });
     } catch (error) {
         next(error);
     }
@@ -93,8 +108,12 @@ exports.deleteSupplier = async (req, res, next) => {
             return res.status(404).json({ message: 'Supplier not found' });
         }
 
-        // Update stock by reducing the quantity
-        await StockController.deleteStock(supplierToDelete.category, supplierToDelete.itemName, supplierToDelete.itemQuantity);
+        // Update stock
+        await StockController.deleteStock(
+            supplierToDelete.category,
+            supplierToDelete.itemName,
+            supplierToDelete.itemQuantity
+        );
 
         res.status(200).json({ message: 'Supplier deleted successfully' });
     } catch (error) {
