@@ -3,8 +3,11 @@ import './supplier-style.css';
 import Input from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
 import LoadingButton from '../../../components/ui/LoadingButton';
+import { useNavigate } from 'react-router-dom';
+import apis from '../../../utils/apis';
+import toast from 'react-hot-toast';
 
-const AddSupplier = ({ onAdd }) => {
+const AddSupplier = () => {
     const [formData, setFormData] = useState({
         supplierName: '',
         supplierAddress: '',
@@ -12,33 +15,68 @@ const AddSupplier = ({ onAdd }) => {
         itemName: '',
         itemQuantity: '',
         pricePerItem: '',
-        totalPrice: 0,
     });
 
+    const navigate = useNavigate();  // Use React Router to navigate after success
+
     useEffect(() => {
+        // Calculate totalPrice whenever itemQuantity or pricePerItem changes
         const totalPrice = formData.itemQuantity * formData.pricePerItem;
         setFormData(prevFormData => ({
             ...prevFormData,
-            totalPrice: totalPrice || 0,
+            totalPrice: totalPrice || 0, // Update totalPrice in state
         }));
     }, [formData.itemQuantity, formData.pricePerItem]);
 
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
+        const { name, value } = e.target;
+
+        // Convert itemQuantity and pricePerItem to numbers
+        if (name === "itemQuantity" || name === "pricePerItem") {
+            setFormData({
+                ...formData,
+                [name]: value ? parseFloat(value) : 0, // If value is empty, set to 0
+            });
+        } else {
+            // Update other fields normally
+            setFormData({
+                ...formData,
+                [name]: value,
+            });
+        }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        onAdd({ ...formData, id: new Date().getTime() });
-        alert('Supplier added successfully!');
+        
+        // Add supplier to the list without sending totalPrice
+        const { totalPrice, ...supplierData } = formData; // Remove totalPrice
+
+        try {
+            // Send the supplier data to the backend without totalPrice
+            const response = await fetch(apis().addSupplier, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(supplierData),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                toast.success(result.message);  // Show success message
+                navigate('/admin/supplier');  // Navigate to the supplier list page
+            } else {
+                toast.error(result.message || 'Failed to add supplier');
+            }
+        } catch (error) {
+            toast.error(error.message || 'An error occurred while adding supplier');
+        }
     };
 
     return (
         <div className='suppier_main'>
-            <h2 className='supplier_header'>Supplier / Add</h2>
+            <h2 className='supplier_header'><span style={{color: 'blue', cursor: 'pointer'}} onClick={() => navigate('/admin/supplier')}>Supplier</span>/ Add</h2>
             <form onSubmit={handleSubmit}>
                 <div className="row supplier_container">
                     <div className="col-md-6 supplier_item">
@@ -124,7 +162,7 @@ const AddSupplier = ({ onAdd }) => {
                     </div>
 
                     <div className="col-md-4 pt-4 d-flex justify-content-center align-items-center">
-                        <Button><LoadingButton title='Add Supplier' /></Button>
+                        <Button><LoadingButton title='Add Supplier' onClick={handleSubmit} /></Button>
                     </div>
                 </div>
             </form>

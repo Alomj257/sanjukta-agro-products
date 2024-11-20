@@ -3,8 +3,15 @@ import './supplier-style.css';
 import Input from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
 import LoadingButton from '../../../components/ui/LoadingButton';
+import { useLocation, useNavigate } from 'react-router-dom';
+import apis from '../../../utils/apis';
+import toast from 'react-hot-toast';
 
-const EditSupplier = ({ supplierData, onUpdate }) => {
+const EditSupplier = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { supplierData } = location.state || {}; // Get supplier data passed from the previous page
+
     const [formData, setFormData] = useState({
         supplierName: '',
         supplierAddress: '',
@@ -15,6 +22,7 @@ const EditSupplier = ({ supplierData, onUpdate }) => {
         totalPrice: 0,
     });
 
+    // Set form data if supplierData is available
     useEffect(() => {
         if (supplierData) {
             setFormData({
@@ -24,6 +32,7 @@ const EditSupplier = ({ supplierData, onUpdate }) => {
         }
     }, [supplierData]);
 
+    // Recalculate totalPrice when quantity or price per item changes
     useEffect(() => {
         const totalPrice = formData.itemQuantity * formData.pricePerItem;
         setFormData(prevFormData => ({
@@ -32,6 +41,7 @@ const EditSupplier = ({ supplierData, onUpdate }) => {
         }));
     }, [formData.itemQuantity, formData.pricePerItem]);
 
+    // Handle form data changes
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -39,15 +49,39 @@ const EditSupplier = ({ supplierData, onUpdate }) => {
         });
     };
 
-    const handleSubmit = (e) => {
+    // Handle form submission
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        onUpdate({ ...formData });
-        alert('Supplier details updated successfully!');
+    
+        const { _id, createdAt, updatedAt, __v, totalPrice, ...dataToSend } = formData;
+    
+        try {
+            const response = await fetch(apis().updateSupplier(supplierData._id), {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dataToSend),
+            });
+            const result = await response.json();
+    
+            if (response.ok && result?.supplier) {
+                toast.success('Supplier updated successfully!');
+                navigate('/admin/supplier');
+            } else {
+                throw new Error(result?.message || 'Failed to update supplier');
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
     };
+    
 
     return (
         <div className='suppier_main'>
-            <h2 className='supplier_header'>Supplier / Edit</h2>
+            <h2 className='supplier_header'>
+                <span style={{ color: 'blue', cursor: 'pointer' }} onClick={() => navigate('/admin/supplier')}>
+                    Supplier
+                </span> / Edit
+            </h2>
             <form onSubmit={handleSubmit}>
                 <div className="row supplier_container">
                     <div className="col-md-6 supplier_item">
@@ -93,7 +127,7 @@ const EditSupplier = ({ supplierData, onUpdate }) => {
                             name="itemName"
                             value={formData.itemName}
                             onChange={handleChange}
-                            placeholder="Sugar"
+                            placeholder="Enter item name"
                             required
                         />
                     </div>
@@ -105,7 +139,7 @@ const EditSupplier = ({ supplierData, onUpdate }) => {
                             name="itemQuantity"
                             value={formData.itemQuantity}
                             onChange={handleChange}
-                            placeholder="10 kg"
+                            placeholder="Enter quantity"
                             required
                         />
                     </div>
@@ -117,7 +151,7 @@ const EditSupplier = ({ supplierData, onUpdate }) => {
                             name="pricePerItem"
                             value={formData.pricePerItem}
                             onChange={handleChange}
-                            placeholder="Rs 40"
+                            placeholder="Enter price per item"
                             required
                         />
                     </div>

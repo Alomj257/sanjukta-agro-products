@@ -1,25 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import DataTable from '../../../components/dataTable/DataTable';
 import './supplier-style.css';
 import { FaEye } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
+import apis from '../../../utils/apis'; // Import apis.js correctly
+import toast from 'react-hot-toast';
+import { ClipLoader } from 'react-spinners';  // Importing a loader component
+import DeleteModal from '../../../components/model/DeleteModal';
 
 const SupplierTable = () => {
     const navigate = useNavigate();
+    const [data, setData] = useState([]);
+    const [records, setRecords] = useState([]);
+    const [loading, setLoading] = useState(true); // State to manage loading
+    const [showDeleteModal, setShowDeleteModal] = useState(false); // State to manage modal visibility
+    const [supplierToDelete, setSupplierToDelete] = useState(null); // State to store the supplier being deleted
+    const toastShownRef = useRef(false);
+
+    // Fetch suppliers from API
+    useEffect(() => {
+        const fetchSuppliers = async () => {
+          try {
+            const response = await fetch(apis().getAllSuppliers);
+            if (!response.ok) throw new Error('Failed to fetch suppliers');
+    
+            const result = await response.json();
+    
+            if (result?.status) {
+              // Sort suppliers by createdAt (assuming the field is `createdAt`)
+              const sortedSuppliers = result.suppliers.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
+              setData(sortedSuppliers);
+              setRecords(sortedSuppliers);
+    
+              // Show toast only if not already shown
+              if (!toastShownRef.current) {
+                toastShownRef.current = true; // Set ref to true after showing the toast
+              }
+            }
+          } catch (error) {
+            toast.error(error.message);
+          } finally {
+            setLoading(false);  // Set loading to false after fetching is complete
+          }
+        };
+    
+        fetchSuppliers();
+      }, []);
 
     // Define column headers
     const columns = [
         {
             name: 'Name',
             selector: row => row.supplierName,
-            sortable: true,
         },
         {
             name: 'Address',
             selector: row => row.supplierAddress,
-            sortable: true,
         },
         {
             name: 'Category',
@@ -34,17 +73,14 @@ const SupplierTable = () => {
         {
             name: 'Quantity',
             selector: row => row.itemQuantity,
-            sortable: true,
         },
         {
             name: 'Price',
             selector: row => row.pricePerItem,
-            sortable: true,
         },
         {
             name: 'Total Price',
             selector: row => row.totalPrice,
-            sortable: true,
         },
         {
             name: 'Actions',
@@ -52,7 +88,7 @@ const SupplierTable = () => {
                 <div>
                     <button onClick={() => handleView(row)} className='readBtn Btn'><FaEye /></button>
                     <button onClick={() => handleEdit(row)} className='editBtn Btn'><MdEdit /></button>
-                    <button onClick={() => handleDelete(row.id)} className='deleteBtn Btn'><MdDelete /></button>
+                    <button onClick={() => handleDelete(row)} className='deleteBtn Btn'><MdDelete /></button>
                 </div>
             ),
             ignoreRowClick: true,
@@ -61,50 +97,42 @@ const SupplierTable = () => {
         },
     ];
 
-    // Example data
-    const [data, setData] = useState([
-        {
-            id: 1,
-            supplierName: 'Jahangir Alom',
-            supplierAddress: 'Latu, Karimganj, Assam',
-            category: 'Food',
-            itemName: 'Suger',
-            itemQuantity: 10,
-            pricePerItem: 50,
-            totalPrice: 500,
-        },
-        {
-            id: 2,
-            supplierName: 'Supplier B',
-            supplierAddress: 'Address B',
-            category: 'Furniture',
-            itemName: 'Item 2',
-            itemQuantity: 5,
-            pricePerItem: 100,
-            totalPrice: 500,
-        },
-    ]);
-
     // Handlers
     const handleView = (row) => {
-        console.log("View row: ", row);  // Check row data
-        alert(`Viewing ${row.itemName}`);
+        navigate(`/admin/supplier/view/${row._id}`);  // Navigate to supplier details page
     };
+    
 
     const handleEdit = (row) => {
-        console.log("Edit row: ", row);  // Check row data
-        alert(`Editing ${row.itemName}`);
+        navigate(`/admin/supplier/edit/${row._id}`, { state: { supplierData: row } });
+    }    
+
+    const handleDelete = (supplier) => {
+        setSupplierToDelete(supplier); // Set the supplier to be deleted
+        setShowDeleteModal(true); // Show the modal
     };
 
-    const handleDelete = (id) => {
-        console.log("Delete ID: ", id);  // Check id
-        setData(data.filter(item => item.id !== id));
-    };
+    const confirmDelete = async () => {
+        if (!supplierToDelete) return;
 
-    const [records, setRecords] = useState(data);
+        try {
+            // Use dynamic delete URL with the supplier ID
+            const deleteUrl = apis().deleteSupplier(supplierToDelete._id); // Ensure you're calling the function
+            const response = await fetch(deleteUrl, { method: 'DELETE' });
+            if (!response.ok) throw new Error('Failed to delete supplier');
+            setData(data.filter(item => item._id !== supplierToDelete._id));
+            setRecords(records.filter(item => item._id !== supplierToDelete._id));
+            toast.success('Supplier deleted successfully');
+        } catch (error) {
+            toast.error(error.message);
+        } finally {
+            setShowDeleteModal(false);
+            setSupplierToDelete(null);
+        }
+    };
 
     const handleSearch = (e) => {
-        let query = e.target.value;
+        const query = e.target.value;
         const newRecords = data.filter(item => item.supplierName.toLowerCase().includes(query.toLowerCase()));
         setRecords(newRecords);
     };
@@ -120,7 +148,24 @@ const SupplierTable = () => {
                 <input type="text" placeholder='Search supplier by name' onChange={handleSearch} />
                 <button className='supplierBtn' onClick={handleAddSupplierClick}>Add Supplier</button>
             </div>
-            <DataTable columns={columns} data={records} />
+
+            {/* Display loader spinner if loading is true */}
+            {loading ? (
+                <div className='loading-spinner'>
+                    <ClipLoader size={30} color="#00BFFF" loading={loading} />
+                </div>
+            ) : (
+                <DataTable columns={columns} data={records} />
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteModal && (
+                <DeleteModal
+                    supplierName={supplierToDelete.supplierName}
+                    onConfirm={confirmDelete}
+                    onCancel={() => setShowDeleteModal(false)}
+                />
+            )}
         </div>
     );
 };

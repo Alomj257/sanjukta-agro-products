@@ -9,7 +9,12 @@ const apis = () => {
     verifyOtp: `${local}user/otp/verify`,
     getOtpTime:`${local}user/otp/time`,
     passwordUpdate: `${local}user/password/update`,
-    getAccess: `${local}user/get/access`
+    getAccess: `${local}user/get/access`,
+    getAllSuppliers: `${local}suppliers`,
+    addSupplier: `${local}suppliers/add-supplier`,
+    deleteSupplier: (id) => `${local}suppliers/delete-supplier/${id}`,
+    viewSupplier : (id) => `${local}suppliers/view-supplier/${id}`,
+    updateSupplier : (id) => `${local}suppliers/update-supplier/${id}`
   }
 
   return list;

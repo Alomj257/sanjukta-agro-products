@@ -51,6 +51,14 @@
     background-color: #b6b4b4;
 }
 
+.loading-spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+}
+
 .suppier_main {
     margin-top: 20px;
     padding: 20px;
@@ -76,4 +84,12 @@
     font-size: 14px;
     font-weight: 500;
     margin-bottom: 5px;
+}
+
+.viewBox span {
+    border: none;
+    outline: none;
+    border: 1px solid gray;
+    padding: 6px 12px;
+    border-radius: 0.4rem;
 }
