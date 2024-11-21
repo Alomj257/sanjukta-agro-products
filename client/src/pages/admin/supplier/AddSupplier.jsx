@@ -1,71 +1,72 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './supplier-style.css';
 import Input from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
-import LoadingButton from '../../../components/ui/LoadingButton';
 import { useNavigate } from 'react-router-dom';
 import apis from '../../../utils/apis';
 import toast from 'react-hot-toast';
+import LoadingButton from '../../../components/ui/LoadingButton';
+import { FaPlus, FaTrashAlt } from 'react-icons/fa';
 
 const AddSupplier = () => {
     const [formData, setFormData] = useState({
         supplierName: '',
         supplierAddress: '',
-        category: '',
-        itemName: '',
-        itemQuantity: '',
-        pricePerItem: '',
+        email: '',
+        gst: '',
+        contactDetails: '',
+        items: [
+            {
+                itemName: '',
+                unit: '',
+                itemQuantity: null,
+                pricePerItem: null,
+            },
+        ],
     });
 
-    const navigate = useNavigate();  // Use React Router to navigate after success
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        // Calculate totalPrice whenever itemQuantity or pricePerItem changes
-        const totalPrice = formData.itemQuantity * formData.pricePerItem;
-        setFormData(prevFormData => ({
-            ...prevFormData,
-            totalPrice: totalPrice || 0, // Update totalPrice in state
-        }));
-    }, [formData.itemQuantity, formData.pricePerItem]);
-
-    const handleChange = (e) => {
+    const handleChange = (e, index, isItemField = false) => {
         const { name, value } = e.target;
-
-        // Convert itemQuantity and pricePerItem to numbers
-        if (name === "itemQuantity" || name === "pricePerItem") {
-            setFormData({
-                ...formData,
-                [name]: value ? parseFloat(value) : 0, // If value is empty, set to 0
-            });
+        if (isItemField) {
+            const updatedItems = [...formData.items];
+            updatedItems[index][name] = name === 'itemQuantity' || name === 'pricePerItem' ? (parseFloat(value) || null) : value;
+            setFormData({ ...formData, items: updatedItems });
         } else {
-            // Update other fields normally
-            setFormData({
-                ...formData,
-                [name]: value,
-            });
+            setFormData({ ...formData, [name]: value });
         }
+    };
+    
+
+    const addNewItem = () => {
+        setFormData({
+            ...formData,
+            items: [
+                ...formData.items,
+                { itemName: '', unit: '', itemQuantity: null, pricePerItem: null },
+            ],
+        });
+    };
+
+    const removeItem = (index) => {
+        const updatedItems = formData.items.filter((_, i) => i !== index);
+        setFormData({ ...formData, items: updatedItems });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        // Add supplier to the list without sending totalPrice
-        const { totalPrice, ...supplierData } = formData; // Remove totalPrice
-
         try {
-            // Send the supplier data to the backend without totalPrice
             const response = await fetch(apis().addSupplier, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(supplierData),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
             });
 
             const result = await response.json();
             if (response.ok) {
-                toast.success(result.message);  // Show success message
-                navigate('/admin/supplier');  // Navigate to the supplier list page
+                toast.success(result.message);
+                navigate('/admin/supplier');
             } else {
                 toast.error(result.message || 'Failed to add supplier');
             }
@@ -76,16 +77,25 @@ const AddSupplier = () => {
 
     return (
         <div className='suppier_main'>
-            <h2 className='supplier_header'><span style={{color: 'blue', cursor: 'pointer'}} onClick={() => navigate('/admin/supplier')}>Supplier</span>/ Add</h2>
+            <h2 className='supplier_header'>
+                <span
+                    style={{ color: 'blue', cursor: 'pointer' }}
+                    onClick={() => navigate('/admin/supplier')}
+                >
+                    Supplier
+                </span>
+                / Add
+            </h2>
             <form onSubmit={handleSubmit}>
                 <div className="row supplier_container">
+                    <h4>Supplier Details</h4>
                     <div className="col-md-6 supplier_item">
                         <label>Supplier Name *</label>
                         <Input
                             type="text"
                             name="supplierName"
                             value={formData.supplierName}
-                            onChange={handleChange}
+                            onChange={(e) => handleChange(e)}
                             placeholder="Enter supplier name"
                             required
                         />
@@ -97,72 +107,122 @@ const AddSupplier = () => {
                             type="text"
                             name="supplierAddress"
                             value={formData.supplierAddress}
-                            onChange={handleChange}
+                            onChange={(e) => handleChange(e)}
                             placeholder="Enter supplier address"
                             required
                         />
                     </div>
 
                     <div className="col-md-6 supplier_item">
-                        <label>Category *</label>
+                        <label>Email *</label>
                         <Input
-                            type="text"
-                            name="category"
-                            value={formData.category}
-                            onChange={handleChange}
-                            placeholder="Enter category"
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={(e) => handleChange(e)}
+                            placeholder="Enter email"
                             required
                         />
                     </div>
 
                     <div className="col-md-6 supplier_item">
-                        <label>Item Name *</label>
+                        <label>GST *</label>
                         <Input
                             type="text"
-                            name="itemName"
-                            value={formData.itemName}
-                            onChange={handleChange}
-                            placeholder="Sugar"
+                            name="gst"
+                            value={formData.gst}
+                            onChange={(e) => handleChange(e)}
+                            placeholder="Enter GST number"
                             required
                         />
                     </div>
 
                     <div className="col-md-6 supplier_item">
-                        <label>Quantity *</label>
-                        <Input
-                            type="number"
-                            name="itemQuantity"
-                            value={formData.itemQuantity}
-                            onChange={handleChange}
-                            placeholder="10 kg"
-                            required
-                        />
-                    </div>
-
-                    <div className="col-md-6 supplier_item">
-                        <label>Price per Item *</label>
-                        <Input
-                            type="number"
-                            name="pricePerItem"
-                            value={formData.pricePerItem}
-                            onChange={handleChange}
-                            placeholder="Rs 40"
-                            required
-                        />
-                    </div>
-
-                    <div className="col-md-12 supplier_item">
-                        <label>Total Price</label>
+                        <label>Contact Details *</label>
                         <Input
                             type="text"
-                            name="totalPrice"
-                            value={formData.totalPrice}
-                            readOnly
+                            name="contactDetails"
+                            value={formData.contactDetails}
+                            onChange={(e) => handleChange(e)}
+                            placeholder="Enter contact number"
+                            required
                         />
                     </div>
 
-                    <div className="col-md-4 pt-4 d-flex justify-content-center align-items-center">
-                        <Button><LoadingButton title='Add Supplier' onClick={handleSubmit} /></Button>
+                    <h4 style={{ paddingTop: '20px' }}>Items Details</h4>
+
+                    {formData.items.map((item, index) => (
+                        <div key={index} className="col-md-12 supplier_item">
+                            <div className="row">
+                                <div className="col-md-3">
+                                    <label>Item Name *</label>
+                                    <Input
+                                        type="text"
+                                        name="itemName"
+                                        value={item.itemName}
+                                        onChange={(e) => handleChange(e, index, true)}
+                                        placeholder="Enter item name"
+                                        required
+                                    />
+                                </div>
+                                <div className="col-md-3 supplier_item">
+                                    <label>Unit *</label>
+                                    <select
+                                        name="unit"
+                                        value={item.unit}
+                                        onChange={(e) => handleChange(e, index, true)}
+                                        required
+                                        className="custom-select"
+                                    >
+                                        <option value="">Select unit</option>
+                                        <option value="kg">Kg</option>
+                                        <option value="ltr">Ltr</option>
+                                    </select>
+                                </div>
+                                <div className="col-md-2">
+                                    <label>Quantity *</label>
+                                    <Input
+                                        type="number"
+                                        name="itemQuantity"
+                                        value={item.itemQuantity}
+                                        onChange={(e) => handleChange(e, index, true)}
+                                        placeholder="Enter quantity"
+                                        required
+                                    />
+                                </div>
+                                <div className="col-md-2">
+                                    <label>Price per Item *</label>
+                                    <Input
+                                        type="number"
+                                        name="pricePerItem"
+                                        value={item.pricePerItem}
+                                        onChange={(e) => handleChange(e, index, true)}
+                                        placeholder="Enter price"
+                                        required
+                                    />
+                                </div>
+                                <div className="col-md-2 d-flex align-items-end gap-2">
+                                    <button type="button" className="btn btn-primary itemBtn" onClick={addNewItem}>
+                                        <FaPlus />
+                                    </button>
+                                    {formData.items.length > 1 && (
+                                        <button
+                                            type="button"
+                                            className="btn btn-danger itemBtn"
+                                            onClick={() => removeItem(index)}
+                                        >
+                                            <FaTrashAlt />
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+
+                    <div className="col-md-4 supplier_item mt-5">
+                        <Button>
+                            <LoadingButton title="Add Supplier" onClick={handleSubmit} />
+                        </Button>
                     </div>
                 </div>
             </form>

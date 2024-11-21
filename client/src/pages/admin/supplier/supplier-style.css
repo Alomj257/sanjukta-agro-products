@@ -62,15 +62,28 @@
 .suppier_main {
     margin-top: 20px;
     padding: 20px;
-    height: 86vh;
     border: 1px solid #ccc;
     border-radius: 8px;
     background-color: #f9f9f9;
 }
 
+.supplier_container h4 {
+    color: black;
+    font-size: 18px;
+}
+
 .supplier_header {
     margin-bottom: 24px;
     font-size: 22px;
+    font-weight: 500;
+}
+
+.download_pdf {
+    padding: 4px 8px;
+    border: none;
+    outline: none;
+    border: 1px solid gray;
+    border-radius: 8px;
     font-weight: 500;
 }
 
@@ -92,4 +105,66 @@
     border: 1px solid gray;
     padding: 6px 12px;
     border-radius: 0.4rem;
+}
+
+.total {
+    padding: 10px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 4rem;
+}
+
+.total label {
+    color: gray;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.total span {
+    width: 21%;
+}
+.table_main {
+    padding: 10px;
+}
+.item-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.item-table th, .item-table td {
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.item-table th {
+    background-color: #f2f2f2;
+    font-weight: 600;
+}
+
+.item-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.item-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.custom-select {
+    margin-top: 2px;
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    background-color: #fff;
+    color: #333;
+}
+
+.itemBtn {
+    margin-bottom: 5px;
 }

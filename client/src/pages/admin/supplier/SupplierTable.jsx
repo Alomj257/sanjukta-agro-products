@@ -5,82 +5,76 @@ import { FaEye } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
-import apis from '../../../utils/apis'; // Import apis.js correctly
+import apis from '../../../utils/apis';
 import toast from 'react-hot-toast';
-import { ClipLoader } from 'react-spinners';  // Importing a loader component
+import { ClipLoader } from 'react-spinners';
 import DeleteModal from '../../../components/model/DeleteModal';
 
 const SupplierTable = () => {
     const navigate = useNavigate();
     const [data, setData] = useState([]);
     const [records, setRecords] = useState([]);
-    const [loading, setLoading] = useState(true); // State to manage loading
-    const [showDeleteModal, setShowDeleteModal] = useState(false); // State to manage modal visibility
-    const [supplierToDelete, setSupplierToDelete] = useState(null); // State to store the supplier being deleted
+    const [loading, setLoading] = useState(true);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [supplierToDelete, setSupplierToDelete] = useState(null);
     const toastShownRef = useRef(false);
 
-    // Fetch suppliers from API
     useEffect(() => {
-        const fetchSuppliers = async () => {
-          try {
+    const fetchSuppliers = async () => {
+        setLoading(true); // Set loading to true before starting the fetch
+        try {
             const response = await fetch(apis().getAllSuppliers);
             if (!response.ok) throw new Error('Failed to fetch suppliers');
-    
-            const result = await response.json();
-    
-            if (result?.status) {
-              // Sort suppliers by createdAt (assuming the field is `createdAt`)
-              const sortedSuppliers = result.suppliers.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    
-              setData(sortedSuppliers);
-              setRecords(sortedSuppliers);
-    
-              // Show toast only if not already shown
-              if (!toastShownRef.current) {
-                toastShownRef.current = true; // Set ref to true after showing the toast
-              }
-            }
-          } catch (error) {
-            toast.error(error.message);
-          } finally {
-            setLoading(false);  // Set loading to false after fetching is complete
-          }
-        };
-    
-        fetchSuppliers();
-      }, []);
 
-    // Define column headers
+            const result = await response.json();
+            console.log("API Response: ", result);  // Log the entire response for debugging
+            
+            // Ensure the 'createdAt' field exists and is valid for sorting
+            if (result && result.suppliers && result.suppliers.length > 0) {
+                const sortedSuppliers = result.suppliers.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                setData(sortedSuppliers);
+                setRecords(sortedSuppliers);
+
+                if (!toastShownRef.current) {
+                    toastShownRef.current = true;
+                }
+            } else {
+                console.error("No suppliers data found", result);  // Log if no data is found
+                throw new Error("No supplier data found");
+            }
+        } catch (error) {
+            console.error("Error fetching suppliers:", error);
+            toast.error(error.message);
+        } finally {
+            setLoading(false); // Set loading to false after the fetch
+        }
+    };
+
+    fetchSuppliers();
+}, []);
+
+
     const columns = [
         {
-            name: 'Name',
+            name: 'Supplier Name',
             selector: row => row.supplierName,
         },
         {
-            name: 'Address',
+            name: 'Supplier Address',
             selector: row => row.supplierAddress,
         },
         {
-            name: 'Category',
-            selector: row => row.category,
-            sortable: true,
+            name: 'Email',
+            selector: row => row.email,
         },
         {
-            name: 'Item Name',
-            selector: row => row.itemName,
-            sortable: true,
+            name: 'GST',
+            selector: row => row.gst,
         },
         {
-            name: 'Quantity',
-            selector: row => row.itemQuantity,
-        },
-        {
-            name: 'Price',
-            selector: row => row.pricePerItem,
-        },
-        {
-            name: 'Total Price',
-            selector: row => row.totalPrice,
+            name: 'Contact Details',
+            selector: row => row.contactDetails,
         },
         {
             name: 'Actions',
@@ -97,27 +91,24 @@ const SupplierTable = () => {
         },
     ];
 
-    // Handlers
     const handleView = (row) => {
-        navigate(`/admin/supplier/view/${row._id}`);  // Navigate to supplier details page
+        navigate(`/admin/supplier/view/${row._id}`);
     };
     
-
     const handleEdit = (row) => {
         navigate(`/admin/supplier/edit/${row._id}`, { state: { supplierData: row } });
-    }    
+    };
 
     const handleDelete = (supplier) => {
-        setSupplierToDelete(supplier); // Set the supplier to be deleted
-        setShowDeleteModal(true); // Show the modal
+        setSupplierToDelete(supplier);
+        setShowDeleteModal(true);
     };
 
     const confirmDelete = async () => {
         if (!supplierToDelete) return;
 
         try {
-            // Use dynamic delete URL with the supplier ID
-            const deleteUrl = apis().deleteSupplier(supplierToDelete._id); // Ensure you're calling the function
+            const deleteUrl = apis().deleteSupplier(supplierToDelete._id);
             const response = await fetch(deleteUrl, { method: 'DELETE' });
             if (!response.ok) throw new Error('Failed to delete supplier');
             setData(data.filter(item => item._id !== supplierToDelete._id));
@@ -137,7 +128,6 @@ const SupplierTable = () => {
         setRecords(newRecords);
     };
 
-    // Navigate to the Add Supplier page
     const handleAddSupplierClick = () => {
         navigate('/admin/supplier/add');
     };
@@ -149,16 +139,16 @@ const SupplierTable = () => {
                 <button className='supplierBtn' onClick={handleAddSupplierClick}>Add Supplier</button>
             </div>
 
-            {/* Display loader spinner if loading is true */}
             {loading ? (
                 <div className='loading-spinner'>
                     <ClipLoader size={30} color="#00BFFF" loading={loading} />
                 </div>
             ) : (
-                <DataTable columns={columns} data={records} />
-            )}
 
-            {/* Delete Confirmation Modal */}
+                    <DataTable columns={columns} data={records} />
+                ) 
+            }
+
             {showDeleteModal && (
                 <DeleteModal
                     supplierName={supplierToDelete.supplierName}
