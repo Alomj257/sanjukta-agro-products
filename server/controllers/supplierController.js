@@ -1,122 +1,185 @@
 const Supplier = require('../models/Supplier');
-const StockController = require('./stockController');
-const { validateSupplier } = require('../utils/validation');
+const Stock = require('../models/Stock');
 
+// Add supplier
 exports.addSupplier = async (req, res, next) => {
-    const { error: validationError } = validateSupplier(req.body);
-    if (validationError) {
-        const error = new Error(validationError.details[0].message);
-        error.statusCode = 400;
-        return next(error);
-    }
-
-    const { supplierName, supplierAddress, category, itemName, itemQuantity, pricePerItem } = req.body;
-    const normalizedCategory = category.trim().toLowerCase();
-    const normalizedItemName = itemName.trim().toLowerCase();
-    const totalPrice = pricePerItem * itemQuantity;
+    const { supplierName, supplierAddress, email, gst, contactDetails, items } = req.body;
 
     try {
-        const newSupplier = new Supplier({
-            supplierName,
-            supplierAddress,
-            category: normalizedCategory,
-            itemName: normalizedItemName,
-            itemQuantity,
-            pricePerItem,
-            totalPrice,
+        // Calculate totalPrice for each item
+        items.forEach(item => {
+            item.totalPrice = item.itemQuantity * item.pricePerItem;
         });
 
-        await newSupplier.save();
+        const supplier = new Supplier({ supplierName, supplierAddress, email, gst, contactDetails, items });
+        await supplier.save();
 
-        // Update stock
-        await StockController.addOrUpdateStock(normalizedCategory, normalizedItemName, itemQuantity);
+        // Update stock for each item added by supplier
+        for (let item of items) {
+            await Stock.findOneAndUpdate(
+                { itemName: item.itemName.toLowerCase() },
+                { $inc: { totalStock: item.itemQuantity } },
+                { upsert: true }
+            );
+        }
 
-        res.status(200).json({ message: 'Supplier added successfully', supplier: newSupplier });
+        // Calculate total sum of all items' total prices
+        const totalSum = supplier.calculateTotalPrice();
+
+        res.status(201).json({
+            message: 'Supplier added successfully',
+            supplier,
+            totalSum
+        });
     } catch (error) {
-        next(error);
+        next(error); // Pass the error to the global error handler
     }
 };
 
+// Update supplier
+exports.updateSupplier = async (req, res, next) => {
+    const { id } = req.params;
+    const { supplierName, supplierAddress, email, gst, contactDetails, items } = req.body;
+
+    try {
+        // Find the supplier by ID
+        const supplier = await Supplier.findById({_id: id});
+        if (!supplier) {
+            const error = new Error('Supplier not found');
+            error.status = 404;
+            throw error;
+        }
+
+        // Calculate totalPrice for each item
+        items.forEach(item => {
+            item.totalPrice = item.itemQuantity * item.pricePerItem;
+        });
+
+        // Update the supplier details
+        supplier.supplierName = supplierName;
+        supplier.supplierAddress = supplierAddress;
+        supplier.email = email;
+        supplier.gst = gst;
+        supplier.contactDetails = contactDetails;
+
+        // Find removed items and update stock
+        for (let oldItem of supplier.items) {
+            const newItem = items.find(item => item.itemName === oldItem.itemName);
+            if (!newItem) {
+                // Item was removed, reduce stock
+                await Stock.findOneAndUpdate(
+                    { itemName: oldItem.itemName.toLowerCase() },
+                    { $inc: { totalStock: -oldItem.itemQuantity } }
+                );
+            } else if (newItem.itemQuantity !== oldItem.itemQuantity) {
+                // Item quantity changed, update stock
+                const quantityDifference = newItem.itemQuantity - oldItem.itemQuantity;
+                await Stock.findOneAndUpdate(
+                    { itemName: oldItem.itemName.toLowerCase() },
+                    { $inc: { totalStock: quantityDifference } }
+                );
+            }
+        }
+
+        // Add new items and update stock
+        for (let newItem of items) {
+            const oldItem = supplier.items.find(item => item.itemName === newItem.itemName);
+            if (!oldItem) {
+                // New item, add to stock
+                await Stock.findOneAndUpdate(
+                    { itemName: newItem.itemName.toLowerCase() },
+                    { $inc: { totalStock: newItem.itemQuantity } },
+                    { upsert: true }
+                );
+            }
+        }
+
+        // Update supplier's items array and save it
+        supplier.items = items;
+        await supplier.save();
+
+        // Calculate total sum of all items' total prices
+        const totalSum = supplier.items.reduce((sum, item) => sum + item.totalPrice, 0);
+
+        res.status(200).json({
+            message: 'Supplier updated successfully',
+            supplier,
+            totalSum
+        });
+    } catch (error) {
+        next(error); // Pass the error to the global error handler
+    }
+};
+
+
+
+// Delete supplier
+exports.deleteSupplier = async (req, res, next) => {
+    const { id } = req.params;
+
+    try {
+        const supplier = await Supplier.findOne({_id: id});
+        if (!supplier) {
+            const error = new Error('Supplier not found');
+            error.status = 404;
+            throw error;
+        }
+
+        // Decrease stock for items of the deleted supplier
+        for (let item of supplier.items) {
+            await Stock.findOneAndUpdate(
+                { itemName: item.itemName.toLowerCase() },
+                { $inc: { totalStock: -item.itemQuantity } }
+            );
+        }
+
+        await Supplier.findByIdAndDelete(id);
+
+        res.status(200).json({ message: 'Supplier deleted successfully' });
+    } catch (error) {
+        next(error); // Pass the error to the global error handler
+    }
+};
+
+// Get all suppliers
 exports.getAllSuppliers = async (req, res, next) => {
     try {
         const suppliers = await Supplier.find();
         res.status(200).json({
-            message: 'Supplier list fetched successfully',
-            status: true,
-            suppliers,
+            message: 'Suppliers fetched successfully',
+            suppliers
         });
     } catch (error) {
-        next(error);
+        next(error); // Pass the error to the global error handler
     }
 };
 
-exports.viewSupplier = async (req, res, next) => {
+// Get supplier by ID with stock details and total sum
+exports.getSupplierById = async (req, res, next) => {
+    const { id } = req.params;
+    
     try {
-        const supplier = await Supplier.findById(req.params.id);
+        const supplier = await Supplier.findOne({ _id: id });
+    
         if (!supplier) {
-            return res.status(404).json({ message: 'Supplier not found' });
+            console.error('Supplier not found');
+            const error = new Error('Supplier not found');
+            error.status = 404;
+            throw error;
         }
-        res.status(200).json(supplier);
-    } catch (error) {
-        next(error);
-    }
-};
-
-exports.updateSupplier = async (req, res, next) => {
-    const { error: validationError } = validateSupplier(req.body);
-    if (validationError) {
-        const error = new Error(validationError.details[0].message);
-        error.statusCode = 400;
-        return next(error);
-    }
-
-    const { category, itemName, itemQuantity, pricePerItem } = req.body;
-    const normalizedCategory = category.trim().toLowerCase();
-    const normalizedItemName = itemName.trim().toLowerCase();
-
-    try {
-        const existingSupplier = await Supplier.findById(req.params.id);
-        if (!existingSupplier) {
-            return res.status(404).json({ message: 'Supplier not found' });
-        }
-
-        const quantityChange = itemQuantity - existingSupplier.itemQuantity;
-        const totalPrice = itemQuantity * pricePerItem;
-
-        const updatedSupplier = await Supplier.findByIdAndUpdate(
-            req.params.id,
-            { ...req.body, category: normalizedCategory, itemName: normalizedItemName, totalPrice },
-            { new: true }
-        );
-
-        // Update stock
-        await StockController.updateStockQuantity(normalizedCategory, normalizedItemName, quantityChange);
-
+    
+        const totalSum = supplier.items.reduce((sum, item) => sum + item.totalPrice, 0);
         res.status(200).json({
-            message: 'Supplier updated successfully',
-            supplier: updatedSupplier,
+            message: 'Supplier details fetched successfully.',
+            supplier: {
+                ...supplier.toObject(),
+                totalSum,
+            },
         });
     } catch (error) {
+        console.error('Error fetching supplier:', error);
         next(error);
     }
-};
+    
 
-exports.deleteSupplier = async (req, res, next) => {
-    try {
-        const supplierToDelete = await Supplier.findByIdAndDelete(req.params.id);
-        if (!supplierToDelete) {
-            return res.status(404).json({ message: 'Supplier not found' });
-        }
-
-        // Update stock
-        await StockController.deleteStock(
-            supplierToDelete.category,
-            supplierToDelete.itemName,
-            supplierToDelete.itemQuantity
-        );
-
-        res.status(200).json({ message: 'Supplier deleted successfully' });
-    } catch (error) {
-        next(error);
-    }
 };

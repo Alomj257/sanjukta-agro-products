@@ -1,4 +1,3 @@
-// routes/supplierRoutes.js
 const express = require('express');
 const router = express.Router();
 const supplierController = require('../controllers/supplierController');
@@ -10,7 +9,7 @@ router.post('/add-supplier', supplierController.addSupplier);
 router.get('/', supplierController.getAllSuppliers);
 
 // View a specific supplier
-router.get('/view-supplier/:id', supplierController.viewSupplier);
+router.get('/view-supplier/:id', supplierController.getSupplierById);
 
 // Update a supplier
 router.put('/update-supplier/:id', supplierController.updateSupplier);

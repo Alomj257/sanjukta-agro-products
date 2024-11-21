@@ -1,35 +1,13 @@
 const express = require('express');
 const router = express.Router();
+
+// Import the stock controller
 const stockController = require('../controllers/stockController');
 
-router.post('/update-stock', async (req, res, next) => {
-    try {
-        const { category, itemName, itemQuantity } = req.body;
-        await stockController.addOrUpdateStock(category, itemName, itemQuantity);
-        res.status(200).json({ message: 'Stock updated successfully' });
-    } catch (error) {
-        next(error);
-    }
-});
-
-router.put('/update-quantity', async (req, res, next) => {
-    try {
-        const { category, itemName, itemQuantityChange } = req.body;
-        await stockController.updateStockQuantity(category, itemName, itemQuantityChange);
-        res.status(200).json({ message: 'Stock quantity updated successfully' });
-    } catch (error) {
-        next(error);
-    }
-});
-
-router.delete('/delete-stock', async (req, res, next) => {
-    try {
-        const { category, itemName, itemQuantity } = req.body;
-        await stockController.deleteStock(category, itemName, itemQuantity);
-        res.status(200).json({ message: 'Stock deleted successfully' });
-    } catch (error) {
-        next(error);
-    }
-});
+// Define routes and link to controller functions
+router.post('/add', stockController.addStock); // Add stock
+router.put('/update/:itemId', stockController.updateStock); // Update stock
+router.delete('/delete/:itemId', stockController.deleteStock); // Delete stock
+router.get('/', stockController.getAllStock); // Get all stock
 
 module.exports = router;

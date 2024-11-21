@@ -1,7 +1,6 @@
-// models/Supplier.js
 const mongoose = require('mongoose');
 
-const supplierSchema = new mongoose.Schema({
+const SupplierSchema = new mongoose.Schema({
     supplierName: {
         type: String,
         required: true
@@ -10,27 +9,51 @@ const supplierSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    category: {
+    email: {
         type: String,
         required: true
     },
-    itemName: {
+    gst: {
         type: String,
         required: true
     },
-    itemQuantity: {
-        type: Number,
+    contactDetails: {
+        type: String,
         required: true
     },
-    pricePerItem: {
-        type: Number,
-        required: true
-    },
-    totalPrice: {
-        type: Number,
-        required: true
-    },
-}, { timestamps: true });
+    items: [
+        {
+            itemName: {
+                type: String,
+                required: true,
+                lowercase: true // Make item names lowercase
+            },
+            unit: {
+                type: String,
+                required: true
+            },
+            itemQuantity: {
+                type: Number,
+                required: true
+            },
+            pricePerItem: {
+                type: Number,
+                required: true
+            },
+            totalPrice: {
+                type: Number,
+                required: true,
+                default: function() {
+                    return this.itemQuantity * this.pricePerItem;
+                }
+            }
+        }
+    ]
+});
 
-const Supplier = mongoose.model('Supplier', supplierSchema);
-module.exports = Supplier;
+// Method to calculate total price of all items in a supplier
+SupplierSchema.methods.calculateTotalPrice = function() {
+    return this.items.reduce((sum, item) => sum + item.totalPrice, 0);
+};
+
+module.exports = mongoose.model('Supplier', SupplierSchema);
