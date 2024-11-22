@@ -7,7 +7,7 @@ exports.addStock = async (req, res, next) => {
     try {
         let stock = await Stock.findOne({ itemName: itemName.toLowerCase() });
         if (stock) {
-            stock.totalStock += totalStock;  // Update stock if item already exists
+            stock.totalStock += totalStock;
             await stock.save();
             return res.status(200).json({
                 message: 'Stock updated successfully',

@@ -18,8 +18,11 @@ exports.addSupplier = async (req, res, next) => {
         for (let item of items) {
             await Stock.findOneAndUpdate(
                 { itemName: item.itemName.toLowerCase() },
-                { $inc: { totalStock: item.itemQuantity } },
-                { upsert: true }
+                { 
+                    $inc: { totalStock: item.itemQuantity },
+                    $setOnInsert: { unit: item.unit } // Ensure unit is set if it's a new stock item
+                },
+                { upsert: true, new: true } // Create a new record if it doesn't exist
             );
         }
 
@@ -43,7 +46,7 @@ exports.updateSupplier = async (req, res, next) => {
 
     try {
         // Find the supplier by ID
-        const supplier = await Supplier.findById({_id: id});
+        const supplier = await Supplier.findById({ _id: id });
         if (!supplier) {
             const error = new Error('Supplier not found');
             error.status = 404;
@@ -88,8 +91,17 @@ exports.updateSupplier = async (req, res, next) => {
                 // New item, add to stock
                 await Stock.findOneAndUpdate(
                     { itemName: newItem.itemName.toLowerCase() },
-                    { $inc: { totalStock: newItem.itemQuantity } },
-                    { upsert: true }
+                    { 
+                        $inc: { totalStock: newItem.itemQuantity },
+                        $setOnInsert: { unit: newItem.unit } // Set unit if it's a new stock item
+                    },
+                    { upsert: true, new: true } // Ensure new records are created when not found
+                );
+            } else {
+                // Update existing item's unit if necessary
+                await Stock.findOneAndUpdate(
+                    { itemName: newItem.itemName.toLowerCase() },
+                    { unit: newItem.unit } // Update the unit field
                 );
             }
         }
@@ -110,8 +122,6 @@ exports.updateSupplier = async (req, res, next) => {
         next(error); // Pass the error to the global error handler
     }
 };
-
-
 
 // Delete supplier
 exports.deleteSupplier = async (req, res, next) => {
@@ -180,6 +190,4 @@ exports.getSupplierById = async (req, res, next) => {
         console.error('Error fetching supplier:', error);
         next(error);
     }
-    
-
 };

@@ -5,6 +5,7 @@ const { connectDB } = require('./config/db');  // Import the connectDB function
 const userRoutes = require('./routes/user');
 const supplierRoutes = require('./routes/supplierRoutes')
 const stockRoutes = require('./routes/stockRoutes');
+const existingRoutes = require('./routes/existingRoutes')
 
 // Initialize the app
 const app = express();
@@ -16,7 +17,8 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 app.use('/user', userRoutes);
 app.use('/suppliers', supplierRoutes);
-app.use('/stocks', stockRoutes)
+app.use('/stocks', stockRoutes);
+app.use('/existing', existingRoutes);
 
 // Connect to MongoDB
 connectDB();

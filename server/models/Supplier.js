@@ -26,7 +26,7 @@ const SupplierSchema = new mongoose.Schema({
             itemName: {
                 type: String,
                 required: true,
-                lowercase: true // Make item names lowercase
+                lowercase: true
             },
             unit: {
                 type: String,
