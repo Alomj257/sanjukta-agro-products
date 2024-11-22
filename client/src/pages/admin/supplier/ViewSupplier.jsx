@@ -114,8 +114,8 @@ const SupplierDetails = () => {
                                     <td>{item.itemName.charAt(0).toUpperCase() + item.itemName.slice(1)}</td>
                                     <td>{item.unit.charAt(0).toUpperCase() + item.unit.slice(1)}</td>
                                     <td>{item.itemQuantity}</td>
-                                    <td>${item.pricePerItem}</td>
-                                    <td>${item.totalPrice}</td>
+                                    <td>₹{item.pricePerItem}</td>
+                                    <td>₹{item.totalPrice}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -124,7 +124,7 @@ const SupplierDetails = () => {
 
                 <div className="viewBox total">
                     <label>Total Sum:</label>
-                    <span>${supplierData.totalSum}</span>
+                    <span>₹{supplierData.totalSum}</span>
                 </div>
             </div>
         </div>

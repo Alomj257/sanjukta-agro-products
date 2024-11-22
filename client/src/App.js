@@ -15,6 +15,7 @@ import Supplier from './pages/admin/supplier/Supplier';
 import AddSupplier from './pages/admin/supplier/AddSupplier';
 import ViewSupplier from './pages/admin/supplier/ViewSupplier';
 import EditSupplier from './pages/admin/supplier/EditSupplier';
+import Stock from './pages/admin/stock/Stock';
 
 // Protects routes based on user role
 const ProtectedRoute = ({ children, requiredRole }) => {
@@ -50,6 +51,8 @@ const App = () => {
         <Route path="supplier/add" element={<AddSupplier/>} />
         <Route path="supplier/view/:id" element={<ViewSupplier/>} />
         <Route path="supplier/edit/:id" element={<EditSupplier/>} />
+
+        <Route path="stock" element={<Stock/>} />
       </Route>
 
       {/* Protected Routes for User */}

@@ -1,0 +1,38 @@
+.stock_main {
+    margin-top: 10px;
+}
+
+.card {
+    border: none;
+}
+
+.card-header {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.card-body {
+    font-size: 1rem;
+    color: #333;
+}
+
+.card-text {
+    font-size: 1.1rem;
+    color: #555;
+}
+
+.card-body p {
+    margin-bottom: 10px;
+}
+
+.stock-search {
+    width: 250px;
+    margin-right: 15px;
+    padding: 7px !important;
+}
+
+.stock-search:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: #ccc !important;
+  }
