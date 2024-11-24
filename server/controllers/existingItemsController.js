@@ -142,7 +142,7 @@ exports.getAllExistingItems = async (req, res, next) => {
             existingItems
         });
     } catch (error) {
-        next(error); // Pass the error to the global error handler
+        next(error);
     }
 };
 

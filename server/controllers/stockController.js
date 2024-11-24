@@ -23,7 +23,7 @@ exports.addStock = async (req, res, next) => {
             stock
         });
     } catch (error) {
-        next(error); // Pass the error to the global error handler
+        next(error);
     }
 };
 
@@ -44,7 +44,7 @@ exports.updateStock = async (req, res, next) => {
             updatedStock
         });
     } catch (error) {
-        next(error); // Pass the error to the global error handler
+        next(error);
     }
 };
 
@@ -61,7 +61,7 @@ exports.deleteStock = async (req, res, next) => {
         }
         res.status(200).json({ message: 'Stock deleted successfully' });
     } catch (error) {
-        next(error); // Pass the error to the global error handler
+        next(error);
     }
 };
 
@@ -74,6 +74,6 @@ exports.getAllStock = async (req, res, next) => {
             stockList
         });
     } catch (error) {
-        next(error); // Pass the error to the global error handler
+        next(error);
     }
 };

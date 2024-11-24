@@ -35,7 +35,7 @@ exports.addSupplier = async (req, res, next) => {
             totalSum
         });
     } catch (error) {
-        next(error); // Pass the error to the global error handler
+        next(error);
     }
 };
 
@@ -119,7 +119,7 @@ exports.updateSupplier = async (req, res, next) => {
             totalSum
         });
     } catch (error) {
-        next(error); // Pass the error to the global error handler
+        next(error);
     }
 };
 
@@ -147,7 +147,7 @@ exports.deleteSupplier = async (req, res, next) => {
 
         res.status(200).json({ message: 'Supplier deleted successfully' });
     } catch (error) {
-        next(error); // Pass the error to the global error handler
+        next(error);
     }
 };
 
@@ -160,7 +160,7 @@ exports.getAllSuppliers = async (req, res, next) => {
             suppliers
         });
     } catch (error) {
-        next(error); // Pass the error to the global error handler
+        next(error);
     }
 };
 
