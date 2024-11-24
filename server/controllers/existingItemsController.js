@@ -95,7 +95,6 @@ exports.updateExistingItem = async (req, res, next) => {
 };
 
 // Delete ExistingItem
-// Delete ExistingItem
 exports.deleteExistingItem = async (req, res, next) => {
     const { id } = req.params;
 

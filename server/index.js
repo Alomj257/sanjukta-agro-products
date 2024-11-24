@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use('/user', userRoutes);
 app.use('/suppliers', supplierRoutes);
 app.use('/stocks', stockRoutes);
-app.use('/existing', existingRoutes);
+app.use('/existings', existingRoutes);
 
 // Connect to MongoDB
 connectDB();
