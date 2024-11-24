@@ -134,6 +134,7 @@ const SupplierTable = () => {
 
     return (
         <div className='supplier-container'>
+            <h3 className="supplier-header-title">Supplier List</h3>
             <div className='supplier-search'>
                 <input type="text" placeholder='Search supplier by name' onChange={handleSearch} />
                 <button className='supplierBtn' onClick={handleAddSupplierClick}>Add Supplier</button>

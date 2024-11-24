@@ -1,5 +1,25 @@
-.stock_main {
+.stock {
     margin-top: 10px;
+}
+
+.stock_main {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.stock-header-title {
+    margin-bottom: 10px;
+}
+
+.stock-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    align-items: center;
 }
 
 .card {
@@ -26,13 +46,13 @@
 }
 
 .stock-search {
-    width: 250px;
-    margin-right: 15px;
+    width: 50% !important;
     padding: 7px !important;
+    border: 1px solid gray !important;
 }
 
 .stock-search:focus {
     outline: none !important;
     box-shadow: none !important;
-    border-color: #ccc !important;
-  }
+    border-color: 1px solid gray !important;
+}

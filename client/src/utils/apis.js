@@ -19,7 +19,14 @@ const apis = () => {
     updateSupplier : (id) => `${local}suppliers/update-supplier/${id}`,
 
     // Stock api
-    getAllStock : `${local}stocks`
+    getAllStock : `${local}stocks`,
+
+    // Existing api
+    getAllExistingItems:`${local}existings`,
+    addExistingItem: `${local}existings/add-item`,
+    deleteExistingItem: (id) => `${local}existings/delete-item/${id}`,
+    getExistingItemById: (id) => `${local}existings/view-item/${id}`,
+    updateExistingItem: (id) => `${local}existings/update-item/${id}`,
   }
 
   return list;

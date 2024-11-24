@@ -16,6 +16,12 @@ import AddSupplier from './pages/admin/supplier/AddSupplier';
 import ViewSupplier from './pages/admin/supplier/ViewSupplier';
 import EditSupplier from './pages/admin/supplier/EditSupplier';
 import Stock from './pages/admin/stock/Stock';
+import StockTable from './pages/admin/stock/StockTable';
+import AddStock from './pages/admin/stock/AddStock';
+import ViewStock from './pages/admin/stock/ViewStock';
+import EditStock from './pages/admin/stock/EditStock';
+import Section from './pages/admin/section/Section';
+import NewStock from './pages/admin/newStock/NewStock';
 
 // Protects routes based on user role
 const ProtectedRoute = ({ children, requiredRole }) => {
@@ -53,6 +59,14 @@ const App = () => {
         <Route path="supplier/edit/:id" element={<EditSupplier/>} />
 
         <Route path="stock" element={<Stock/>} />
+        <Route path='stock/existing' element={<StockTable/>} />
+        <Route path='stock/existing/add' element={<AddStock/>}/>
+        <Route path='stock/existing/view/:id' element={<ViewStock/>}/>
+        <Route path='stock/existing/edit/:id' element={<EditStock/>}/>
+
+        <Route path="section" element={<Section/>} />
+
+        <Route path="stock/new" element={<NewStock/>} />
       </Route>
 
       {/* Protected Routes for User */}

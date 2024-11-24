@@ -52,47 +52,43 @@ const StockList = () => {
   }
 
   return (
-    <div className="container stock_main">
-      <div className="stock-header d-flex justify-content-between align-items-center mb-3">
-        <div>
-          <h3>Stock List</h3>
-        </div>
-        <div className="d-flex align-items-center">
-          <input
-            type="text"
-            placeholder="Search stock by name"
-            className="form-control stock-search "
-            onChange={handleSearch}
-          />
-          <button
-            className="supplierBtn"
-            onClick={() => navigate('/admin/stock/add')}
-          >
-            Add
-          </button>
-        </div>
+    <div className="container stock">
+      <h3 className="stock-header-title">Stock List</h3>
+      <div className="stock-header-actions mb-3">
+        <input
+          type="text"
+          placeholder="Search stock by name"
+          className="form-control stock-search"
+          onChange={handleSearch}
+        />
+        <button
+          className="supplierBtn"
+          onClick={() => navigate('/admin/stock/existing')}
+        >
+          Existing Stock
+        </button>
       </div>
+      <hr />
       {filteredStocks.length === 0 ? (
         <p>No stock available</p>
       ) : (
         <div className="row">
           {filteredStocks.map((stock) => (
-  <div key={stock._id} className="col-md-3 mb-4">
-    <div className="card shadow-lg border-0 rounded">
-      <div className="card-header bg-primary text-white">
-        <h5 className="card-title mb-0">
-          {stock.itemName.charAt(0).toUpperCase() + stock.itemName.slice(1)}
-        </h5>
-      </div>
-      <div className="card-body bg-light">
-        <p className="card-text">
-          <strong>Total Stock:</strong> {`${stock.totalStock} ${stock.unit}`}
-        </p>
-      </div>
-    </div>
-  </div>
-))}
-
+            <div key={stock._id} className="col-md-3 mb-4">
+              <div className="card shadow-lg border-0 rounded">
+                <div className="card-header bg-primary text-white">
+                  <h5 className="card-title mb-0">
+                    {stock.itemName.charAt(0).toUpperCase() + stock.itemName.slice(1)}
+                  </h5>
+                </div>
+                <div className="card-body bg-light">
+                  <p className="card-text">
+                    <strong>Total Stock:</strong> {`${stock.totalStock} ${stock.unit}`}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
