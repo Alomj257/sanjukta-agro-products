@@ -66,6 +66,18 @@ exports.deleteStock = async (req, res, next) => {
 };
 
 // Get all stock
+exports.getStockById = async (req, res, next) => {
+    try {
+        const stock = await Stock.findById(req.params.id);
+        res.status(200).json({
+            message: 'Stock list fetched successfully',
+            stock
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+// Get all stock
 exports.getAllStock = async (req, res, next) => {
     try {
         const stockList = await Stock.find();

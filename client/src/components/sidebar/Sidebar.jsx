@@ -25,7 +25,7 @@ const Sidebar = ({ role }) => {
         ],
         user: [
             { name: 'Dashboard', path: '/user/dashboard', icon: <MdSpaceDashboard /> },
-            { name: 'Stock', path: '/user/stock', icon: <MdInventory /> },
+            { name: 'Section', path: '/user/section', icon: <MdInventory /> },
             { name: 'Logout', path: '/login', icon: <IoLogOut />},
         ],
     };

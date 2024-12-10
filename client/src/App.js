@@ -22,11 +22,15 @@ import ViewStock from './pages/admin/stock/ViewStock';
 import EditStock from './pages/admin/stock/EditStock';
 import Section from './pages/admin/section/Section';
 import NewStock from './pages/admin/newStock/NewStock';
+import AddSection from './pages/admin/section/AddSection';
+import ViewSection from './pages/admin/section/ViewSection';
+import EditSection from './pages/admin/section/EditSection';
+import AssignStockToSection from './pages/admin/assingStockToSection';
+import UserSection from './pages/user/section/UserSection';
 
 // Protects routes based on user role
 const ProtectedRoute = ({ children, requiredRole }) => {
   const userRole = localStorage.getItem('userRole');
-  console.log(userRole);
 
   // If no user role exists, redirect to login
   if (!userRole) {
@@ -63,15 +67,21 @@ const App = () => {
         <Route path='stock/existing/add' element={<AddStock/>}/>
         <Route path='stock/existing/view/:id' element={<ViewStock/>}/>
         <Route path='stock/existing/edit/:id' element={<EditStock/>}/>
+        <Route path="stock/new" element={<NewStock/>} />
 
         <Route path="section" element={<Section/>} />
+        <Route path="section/add" element={<AddSection/>} />
+        <Route path="section/view/:id" element={<ViewSection/>} />
+        <Route path="section/edit/:id" element={<EditSection/>} />
+        <Route path="section/stocks" element={<AssignStockToSection/>} />
+        
 
-        <Route path="stock/new" element={<NewStock/>} />
       </Route>
 
       {/* Protected Routes for User */}
       <Route path="/user" element={<ProtectedRoute requiredRole="user"><UserLayout /></ProtectedRoute>}>
         <Route path="dashboard" element={<UserDashboard />} />
+        <Route path="section" element={<UserSection/>} />
       </Route>
 
       {/* Additional Routes */}

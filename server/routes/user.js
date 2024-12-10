@@ -6,6 +6,8 @@ const verifyOtp = require('../controllers/authController/verifyOtp');
 const getOtpTime = require('../controllers/authController/getOtpTime');
 const passwordUpdate = require('../controllers/authController/passwordUpdate')
 const getAccess = require('../controllers/authController/getAccess');
+const { getAllUsers } = require('../controllers/authController/getAllUsers');
+const { getUserById,getUserByEmail } = require('../controllers/authController/getUserById');
 
 const router = express.Router();
 
@@ -16,5 +18,8 @@ router.post('/otp/verify', verifyOtp);
 router.post('/otp/time', getOtpTime);
 router.post('/password/update', passwordUpdate);
 router.post('/get/access', getAccess);
+router.get('/:id', getUserById);
+router.get('/email/:email', getUserByEmail);
+router.get('/', getAllUsers);
 
 module.exports = router;

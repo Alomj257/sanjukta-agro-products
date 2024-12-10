@@ -10,6 +10,9 @@ const apis = () => {
     getOtpTime:`${local}user/otp/time`,
     passwordUpdate: `${local}user/password/update`,
     getAccess: `${local}user/get/access`,
+    getAllUsers: `${local}user/`,
+    getUserById:(id)=> `${local}user/${id}`,
+    getUserByEmail:(email)=> `${local}user/email/${email}`,
 
     // Supplier api 
     getAllSuppliers: `${local}suppliers`,
@@ -20,6 +23,7 @@ const apis = () => {
 
     // Stock api
     getAllStock : `${local}stocks`,
+    getStockById :(id)=> `${local}stocks/${id}`,
 
     // Existing api
     getAllExistingItems:`${local}existings`,
@@ -27,6 +31,20 @@ const apis = () => {
     deleteExistingItem: (id) => `${local}existings/delete-item/${id}`,
     getExistingItemById: (id) => `${local}existings/view-item/${id}`,
     updateExistingItem: (id) => `${local}existings/update-item/${id}`,
+
+    // sections API
+    getAllSections:`${local}section`,
+    addSections: `${local}section`,
+    deleteSection: (id) => `${local}section/${id}`,
+    getSectionById: (id) => `${local}section/${id}`,
+    updateSection: (id) => `${local}section/${id}`,
+    getSectionByUserId: (userId,status) => `${local}section/user/data/${userId}/${status}`,
+    updateSectionStatus: (id,status) => `${local}section/status/${id}/${status}`,
+    // stock distribution API
+    getAllSectionsStock:(sectionId)=>`${local}section/stock/${sectionId}/`,
+    addStockToSection:(sectionId)=> `${local}section/stock/${sectionId}/`,
+    deleteStockFromSection: (sectionId,stockId) => `${local}section/stock/${sectionId}/${stockId}`,
+    updateStockSection: (sectionId,stockId) => `${local}section/stock/${sectionId}/${stockId}`,
   }
 
   return list;
