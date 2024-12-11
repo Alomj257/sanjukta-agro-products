@@ -42,9 +42,10 @@ const apis = () => {
     updateSectionStatus: (id,status) => `${local}section/status/${id}/${status}`,
     // stock distribution API
     getAllSectionsStock:(sectionId)=>`${local}section/stock/${sectionId}/`,
+    getAllSectionsStockByDate:(sectionId,date)=>`${local}section/stock/${sectionId}/${date}`,
     addStockToSection:(sectionId)=> `${local}section/stock/${sectionId}/`,
-    deleteStockFromSection: (sectionId,stockId) => `${local}section/stock/${sectionId}/${stockId}`,
-    updateStockSection: (sectionId,stockId) => `${local}section/stock/${sectionId}/${stockId}`,
+    deleteStockFromSection: (sectionId,stockId,date) => `${local}section/stock/${sectionId}/${stockId}/${date}`,
+    updateStockSection: (sectionId,stockId,date) => `${local}section/stock/${sectionId}/${stockId}/${date}`,
   }
 
   return list;

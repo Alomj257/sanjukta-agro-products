@@ -1,11 +1,11 @@
 const { default: mongoose } = require("mongoose");
 const Section = require("../models/Section");
 const Stock = require("../models/Stock");
+const StockJoining = require("../models/StockJoining");
 
 // Add ExistingItem
 exports.addSection = async (req, res, next) => {
   try {
-    req.body.status="assign";
     const section = new Section(req.body);
     await section.save();
     res.status(201).json({
@@ -20,20 +20,18 @@ exports.addSection = async (req, res, next) => {
 
 // Update Section
 exports.updateSection = async (req, res, next) => {
+  const {id}=req.params;
   const session = await mongoose.startSession();
   session.startTransaction();
-
   try {
     const section = await Section.findById(req.params?.id).session(session);
     if (!section) {
       throw new Error("Section not found");
     }
-
-    const { stocks } = req.body;
+    const { stocks,date } = req.body;
     if (stocks && Array.isArray(stocks)) {
       for (const stock of stocks) {
         const { _id, qty } = stock;
-
         // Find the stock item
         const stockDoc = await Stock.findById(_id).session(session);
         if (!stockDoc) {
@@ -51,7 +49,21 @@ exports.updateSection = async (req, res, next) => {
         stockDoc.totalStock -= qty;
         await stockDoc.save({ session });
       }
+
+      const stockJoining = await StockJoining.findOne({ sectionId: id });
+      if (stockJoining) {
+        stockJoining.stockGroup.push({ date: date, status: "assign" }); 
+        await stockJoining.save({session});
+      } else {
+        const newStockJoining = new StockJoining({
+          sectionId: id,
+          stockGroup: [{ date: date, status: "assign" }],
+        });
+        await newStockJoining.save({session});
+      }
+      req.body.stocks=[...section.stocks,...req.body.stocks];
     }
+
 
     // Update the Section with the new data
     const updatedSection = await Section.findByIdAndUpdate(
@@ -87,11 +99,11 @@ exports.deleteSection = async (req, res, next) => {
       throw new Error("Section not found");
     }
     // Delete the Section
-  const updatedSection=  await Section.findByIdAndDelete(id);
+    const updatedSection = await Section.findByIdAndDelete(id);
 
     res.status(200).json({
       message: " Section deleted successfully",
-      section: updatedSection, 
+      section: updatedSection,
     });
   } catch (error) {
     console.error("Error deleting Section:", error.message);
@@ -134,9 +146,9 @@ exports.getSectionById = async (req, res, next) => {
 };
 
 exports.getSectionByUserId = async (req, res, next) => {
-  const { userId,status } = req.params;
+  const { userId, status } = req.params;
   try {
-    const section = await Section.findOne({ userId: userId,status:status });
+    const section = await Section.findOne({ userId: userId, status: status });
     if (!section) {
       const error = new Error("Section not found");
       error.status = 404;
@@ -151,7 +163,6 @@ exports.getSectionByUserId = async (req, res, next) => {
   }
 };
 
-
 exports.updateSectionStatus = async (req, res, next) => {
   try {
     const section = await Section.findById(req.params.id);
@@ -160,8 +171,8 @@ exports.updateSectionStatus = async (req, res, next) => {
       error.status = 404;
       throw error;
     }
-    section.status=req.params.status;
-    const updatedSection=await section.save();
+    section.status = req.params.status;
+    const updatedSection = await section.save();
     res.status(200).json({
       message: "Section status updated successfully",
       updatedSection,
@@ -170,5 +181,3 @@ exports.updateSectionStatus = async (req, res, next) => {
     next(error);
   }
 };
-
-

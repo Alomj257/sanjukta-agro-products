@@ -14,7 +14,7 @@ const sectionSchema = new mongoose.Schema(
     },
    
     stocks: [
-      {
+      { 
         _id: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Stock", 
@@ -23,6 +23,7 @@ const sectionSchema = new mongoose.Schema(
           type: Number,
           min: 0, 
         },
+        date:Date,
         unit:String
       },
     ],

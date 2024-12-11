@@ -6,6 +6,7 @@ import Input from "../../../../components/ui/Input";
 import apis from "../../../../utils/apis";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
+import { getAllDatesOfMonth } from "../../../../utils/getDate";
 const AddUpdateStock = ({ details, setPopUp,reFetch }) => {
   const [formData, setFormdata] = useState(details);
   const [stock, setStock] = useState([]);
@@ -58,7 +59,8 @@ const AddUpdateStock = ({ details, setPopUp,reFetch }) => {
 
   const updateDetails = async () => {
     try {
-      const response = await fetch(apis().updateStockSection(state?.sectionId,details?._id?._id), {
+      console.log(details)
+      const response = await fetch(apis().updateStockSection(state?.sectionId,details?._id?._id,details?.date), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -153,7 +155,7 @@ const AddUpdateStock = ({ details, setPopUp,reFetch }) => {
             <div className="d-flex gap-3 mt-5 pt-2">
               <div className="col-md-4 section_item">
                 <Button>
-                  <LoadingButton title="Add section" />
+                  <LoadingButton title="Update section" />
                 </Button>
               </div>
               <button
