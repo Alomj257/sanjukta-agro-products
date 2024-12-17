@@ -6,9 +6,9 @@ sectionRoutes.post("/",addSection);
 sectionRoutes.put("/:id",updateSection);
 sectionRoutes.delete("/:id",deleteSection);
 sectionRoutes.get("/:id",getSectionById);
-sectionRoutes.get("/user/data/:userId/:status",getSectionByUserId);
+sectionRoutes.get("/user/data/:userId",getSectionByUserId);
 sectionRoutes.get("/",getAllSection);
-sectionRoutes.put("/status/:id/:status",updateSectionStatus);
+sectionRoutes.put("/status/:id/:date/:status",updateSectionStatus);
 sectionRoutes.use("/stock/",assingStockToSectionRoutes);
 
 

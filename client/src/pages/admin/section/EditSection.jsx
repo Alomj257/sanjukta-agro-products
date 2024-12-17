@@ -163,7 +163,7 @@ const EditSection = () => {
               required
               className="custom-select"
             >
-              <option value="">Select email</option>
+              <option value="">Select user</option>
               {user?.map((val, index) => (
                 <option key={index} value={val?._id}>
                   {val?.name}
@@ -182,21 +182,6 @@ const EditSection = () => {
               placeholder="Enter email"
               required
             />
-          </div>
-          <div className="col-md-6 section_item">
-            <label>Status </label>
-            <select
-              name="status"
-              value={formData?.status}
-              onChange={(e) => handleChange(e)}
-              required
-              className="custom-select"
-            >
-              <option value="">Select status</option>
-              <option value="assign">Assign</option>
-              <option value="accept">Accept</option>
-              <option value="reject">Reject</option>
-            </select>
           </div>
 
           <div className="col-md-4 section_item mt-5">

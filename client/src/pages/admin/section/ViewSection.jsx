@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import ViewDistribution from "../assingStockToSection/ViewDistribution";
+import ViewDistributionStockByDate from "../assingStockToSection/ViewDistributionStockByDate";
 
 const ViewSection = () => {
   const { id } = useParams();
@@ -129,7 +130,8 @@ const ViewSection = () => {
           <span>{sectionData?.userPhone}</span>
         </div>
      
-        <ViewDistribution />
+        {/* <ViewDistribution /> */}
+        <ViewDistributionStockByDate/>
       </div>
     </div>
   );

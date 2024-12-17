@@ -172,7 +172,6 @@ exports.getSupplierById = async (req, res, next) => {
         const supplier = await Supplier.findOne({ _id: id });
     
         if (!supplier) {
-            console.error('Supplier not found');
             const error = new Error('Supplier not found');
             error.status = 404;
             throw error;
@@ -187,7 +186,6 @@ exports.getSupplierById = async (req, res, next) => {
             },
         });
     } catch (error) {
-        console.error('Error fetching supplier:', error);
         next(error);
     }
 };

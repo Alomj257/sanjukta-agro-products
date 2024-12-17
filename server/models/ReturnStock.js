@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 
-const productSchema = new mongoose.Schema(
+const returnStockSchema = new mongoose.Schema(
   {
-    productName: {
-      type: String,
+    date: {
+      type: Date,
       required: true,
-      // unique: true,
+      unique: true,
       trim: true,
-      lowercase: true 
+      lowercase: true,
     },
 
     sectionId: {
@@ -15,16 +15,6 @@ const productSchema = new mongoose.Schema(
       ref: "Section",
       required: true,
     },
-    date: {
-      type: Date,
-      // unique: true,
-      required: true,
-    },
-    qty: {
-      type: Number,
-      min: 0,
-    },
-    unit: String,
     stocks: [
       {
         _id: {
@@ -43,4 +33,4 @@ const productSchema = new mongoose.Schema(
   { timeStamp: true }
 );
 
-module.exports = mongoose.model("Product", productSchema);
+module.exports = mongoose.model("ReturnStock", returnStockSchema);

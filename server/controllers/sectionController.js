@@ -13,14 +13,13 @@ exports.addSection = async (req, res, next) => {
       section,
     });
   } catch (error) {
-    console.error(error.message);
     next(error);
   }
 };
 
 // Update Section
 exports.updateSection = async (req, res, next) => {
-  const {id}=req.params;
+  const { id } = req.params;
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
@@ -28,7 +27,7 @@ exports.updateSection = async (req, res, next) => {
     if (!section) {
       throw new Error("Section not found");
     }
-    const { stocks,date } = req.body;
+    const { stocks, date } = req.body;
     if (stocks && Array.isArray(stocks)) {
       for (const stock of stocks) {
         const { _id, qty } = stock;
@@ -52,18 +51,17 @@ exports.updateSection = async (req, res, next) => {
 
       const stockJoining = await StockJoining.findOne({ sectionId: id });
       if (stockJoining) {
-        stockJoining.stockGroup.push({ date: date, status: "assign" }); 
-        await stockJoining.save({session});
+        stockJoining.stockGroup.push({ date: date, status: "assign" });
+        await stockJoining.save({ session });
       } else {
         const newStockJoining = new StockJoining({
           sectionId: id,
           stockGroup: [{ date: date, status: "assign" }],
         });
-        await newStockJoining.save({session});
+        await newStockJoining.save({ session });
       }
-      req.body.stocks=[...section.stocks,...req.body.stocks];
+      req.body.stocks = [...section.stocks, ...req.body.stocks];
     }
-
 
     // Update the Section with the new data
     const updatedSection = await Section.findByIdAndUpdate(
@@ -84,8 +82,6 @@ exports.updateSection = async (req, res, next) => {
     // Rollback the transaction on error
     await session.abortTransaction();
     session.endSession();
-
-    console.error("Error updating section:", error.message);
     next(error);
   }
 };
@@ -106,7 +102,6 @@ exports.deleteSection = async (req, res, next) => {
       section: updatedSection,
     });
   } catch (error) {
-    console.error("Error deleting Section:", error.message);
     next(error);
   }
 };
@@ -148,7 +143,7 @@ exports.getSectionById = async (req, res, next) => {
 exports.getSectionByUserId = async (req, res, next) => {
   const { userId, status } = req.params;
   try {
-    const section = await Section.findOne({ userId: userId, status: status });
+    const section = await Section.findOne({ userId: userId });
     if (!section) {
       const error = new Error("Section not found");
       error.status = 404;
@@ -165,16 +160,26 @@ exports.getSectionByUserId = async (req, res, next) => {
 
 exports.updateSectionStatus = async (req, res, next) => {
   try {
-    const section = await Section.findById(req.params.id);
+    const { id, status, date } = req.params;
+    const joinerDate = await StockJoining.findOne({sectionId:id});
+    if (!joinerDate) {
+      const error = new Error("Stock not found");
+      error.status = 404;
+      throw error;
+    }
+    const section = await Section.findById(id);
     if (!section) {
       const error = new Error("Section not found");
       error.status = 404;
       throw error;
     }
-    section.status = req.params.status;
-    const updatedSection = await section.save();
+    const stock = joinerDate.stockGroup.find(
+      (v) => new Date(v.date).getTime() === new Date(date).getTime()
+    );
+    stock.status = status;
+    const updatedSection = await joinerDate.save();
     res.status(200).json({
-      message: "Section status updated successfully",
+      message: `Stocks  successfully ${status} `,
       updatedSection,
     });
   } catch (error) {

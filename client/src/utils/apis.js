@@ -1,6 +1,6 @@
 
 const apis = () => {
-  const local = 'http://localhost:5000/';
+  const local = 'https://sanjukta-server-production.up.railway.app/'
 
   const list = {
     registerUser:`${local}user/register`,
@@ -13,6 +13,7 @@ const apis = () => {
     getAllUsers: `${local}user/`,
     getUserById:(id)=> `${local}user/${id}`,
     getUserByEmail:(email)=> `${local}user/email/${email}`,
+    deleteUser: (id) => `${local}user/${id}`,
 
     // Supplier api 
     getAllSuppliers: `${local}suppliers`,
@@ -38,14 +39,28 @@ const apis = () => {
     deleteSection: (id) => `${local}section/${id}`,
     getSectionById: (id) => `${local}section/${id}`,
     updateSection: (id) => `${local}section/${id}`,
-    getSectionByUserId: (userId,status) => `${local}section/user/data/${userId}/${status}`,
-    updateSectionStatus: (id,status) => `${local}section/status/${id}/${status}`,
+    getSectionByUserId: (userId) => `${local}section/user/data/${userId}`,
+    updateSectionStatus: (id,date,status) => `${local}section/status/${id}/${date}/${status}`,
     // stock distribution API
     getAllSectionsStock:(sectionId)=>`${local}section/stock/${sectionId}/`,
     getAllSectionsStockByDate:(sectionId,date)=>`${local}section/stock/${sectionId}/${date}`,
     addStockToSection:(sectionId)=> `${local}section/stock/${sectionId}/`,
+    getStocksGroupByDate:(sectionId,status)=> `${local}section/stock/${sectionId}/group/date/${status}`,
+    getAllStocksGroupByDate: (sectionId) => `${local}section/stock/${sectionId}/group/by/date/all`,
     deleteStockFromSection: (sectionId,stockId,date) => `${local}section/stock/${sectionId}/${stockId}/${date}`,
     updateStockSection: (sectionId,stockId,date) => `${local}section/stock/${sectionId}/${stockId}/${date}`,
+
+    // product
+    addProduct:`${local}product/`,
+    updateProduct:(id)=>`${local}product/${id}`,
+    getAllProduct:`${local}product/`,
+    getProductById:(id)=>`${local}product/${id}`,
+    deleteProduct:(id)=>`${local}product/${id}`,
+    getProductByDate:(sectionId,date)=>`${local}product/date/${sectionId}/${date}`,
+    // new Stock
+    getAllNewStock:`${local}newStock/`,
+    // return stock
+    addReturnStock:`${local}return-stock/`
   }
 
   return list;

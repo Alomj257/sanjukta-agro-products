@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import apis from "../../../utils/apis"; // Import your apis.js
 import { ClipLoader } from "react-spinners";
 import toast from "react-hot-toast";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import ViewDistribution from "../../admin/assingStockToSection/ViewDistribution";
 import { MdWarning } from "react-icons/md";
+import UserDistributionView from "./UserDistributionView";
 
 const UserSection = () => {
   const [sectionData, setsectionData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [id, setId] = useState("");
-  const [sectionId,setSectionId]=useState("");
+  const [sectionId, setSectionId] = useState("");
   const email = localStorage.getItem("email");
-  const {state}=useLocation();
-
+  const { state } = useLocation();
+  const navigate=useNavigate();
 
   useEffect(() => {
     const getUserByEmail = async () => {
@@ -42,7 +42,7 @@ const UserSection = () => {
     const fetchSectionDetails = async () => {
       setLoading(true);
       try {
-        const apiUrl = apis().getSectionByUserId(id,state==="review"?"assign":"accept");
+        const apiUrl = apis().getSectionByUserId(id);
         const response = await fetch(apiUrl);
         if (!response.ok) throw new Error("Failed to fetch section details");
 
@@ -64,7 +64,7 @@ const UserSection = () => {
 
           sectionDetails.userName = userResult?.user?.name || "";
           sectionDetails.userEmail = userResult?.user?.email || "";
-          setSectionId(result?.section?._id)
+          setSectionId(result?.section?._id);
         }
 
         setsectionData(sectionDetails);
@@ -78,9 +78,9 @@ const UserSection = () => {
         setLoading(false);
       }
     };
-if(id){
-    fetchSectionDetails();
-}
+    if (id) {
+      fetchSectionDetails();
+    }
   }, [id]);
 
   const downloadPDF = async () => {
@@ -119,8 +119,13 @@ if(id){
   }
   return (
     <div className="suppier_main">
-      {state==="review"&& <div className="  rounded bg-light my-3 text-warning text-center"> <MdWarning/> Section is pending for acceptance, please accept it</div>}
-      <div  style={{ display: "flex", justifyContent: "space-between" }}>
+      {state === "review" && (
+        <div className="  rounded bg-light my-3 text-warning text-center">
+          {" "}
+          <MdWarning /> Section is pending for acceptance, please accept it
+        </div>
+      )}
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
         <button
           onClick={downloadPDF}
           style={{ marginBottom: "20px" }}
@@ -130,11 +135,13 @@ if(id){
         </button>
       </div>
       <div className="row section_container">
-        <div className="col-md-6 section_item ">
-          <label>Section </label>
-          <span  className="fw-bold"> {sectionData.sectionName}</span>
+        <div className="d-flex justify-content-between">
+          <div className="col-md-6 section_item ">
+            <label>Section </label>
+            <span className="fw-bold"> {sectionData.sectionName}</span>
+          </div>
         </div>
-        <ViewDistribution  sectionId={sectionId}/>
+        <UserDistributionView sectionId={sectionId} />
       </div>
     </div>
   );

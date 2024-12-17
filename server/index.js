@@ -7,6 +7,9 @@ const supplierRoutes = require('./routes/supplierRoutes')
 const stockRoutes = require('./routes/stockRoutes');
 const existingRoutes = require('./routes/existingRoutes');
 const sectionRoutes = require('./routes/sectionRoutes');
+const productRoutes = require('./routes/productRouted');
+const newProductRoutes = require('./routes/newStockRoutes');
+const returnStockRoutes = require('./routes/returnStockRoutes');
 
 // Initialize the app
 const app = express();
@@ -21,6 +24,9 @@ app.use('/suppliers', supplierRoutes);
 app.use('/stocks', stockRoutes);
 app.use('/existings', existingRoutes);
 app.use('/section', sectionRoutes);
+app.use('/product', productRoutes);
+app.use('/newStock', newProductRoutes);
+app.use('/return-stock', returnStockRoutes);
 
 // Connect to MongoDB
 connectDB();

@@ -51,7 +51,6 @@ const AddSection = () => {
         if (result && result.users && result.users.length > 0) {
           setUsers(result?.users);
         } else {
-          console.error("No suppliers data found", result);
           throw new Error("No Section data found");
         }
       } catch (error) {
@@ -103,7 +102,7 @@ const AddSection = () => {
                   required
                   className="custom-select"
                 >
-                  <option value="">Select email</option>
+                  <option value="">Select user</option>
                   {user?.map((val, index) => (
                     <option key={index} value={val?._id}>
                       {val?.name}

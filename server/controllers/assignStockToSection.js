@@ -1,5 +1,7 @@
+const Product = require("../models/Product");
 const Section = require("../models/Section");
 const Stock = require("../models/Stock");
+const StockJoining = require("../models/StockJoining");
 
 // Add Stock to a Section
 exports.addStock = async (req, res, next) => {
@@ -19,7 +21,6 @@ exports.addStock = async (req, res, next) => {
     if (stock?.totalStock < qty) throw new Error("Quantity is not available");
     section.stocks.push({ _id: stockId, qty, unit });
     stock.totalStock = stock.totalStock - qty;
-    console.log(section, stock);
     await stock.save();
     await section.save();
     res.status(201).json({ message: "Stock added successfully", section });
@@ -73,13 +74,15 @@ exports.deleteStock = async (req, res, next) => {
       throw new Error("Section not found");
     }
     section.stocks = section.stocks.filter((s) => {
-      const isSameStock = s?._id.equals(stockId); 
-      const stockDateTime = new Date(s.date); 
-      const inputDateTime = new Date(date);  
-      
-      return !(isSameStock && stockDateTime.getTime() === inputDateTime.getTime());
+      const isSameStock = s?._id.equals(stockId);
+      const stockDateTime = new Date(s.date);
+      const inputDateTime = new Date(date);
+
+      return !(
+        isSameStock && stockDateTime.getTime() === inputDateTime.getTime()
+      );
     });
-    
+
     await section.save();
 
     res.status(200).json({ message: "Stock deleted successfully", section });
@@ -98,14 +101,11 @@ exports.getStocks = async (req, res, next) => {
       throw new Error("Section not found");
     }
 
-    res
-      .status(200)
-      .json({
-        message: "Stocks retrieved successfully",
-        stocks: section.stocks,
-      });
+    res.status(200).json({
+      message: "Stocks retrieved successfully",
+      stocks: section.stocks,
+    });
   } catch (error) {
-    console.error("Error retrieving stocks:", error);
     next(error);
   }
 };
@@ -113,26 +113,86 @@ exports.getStocks = async (req, res, next) => {
 // Retrieve Stocks for a Section
 exports.getAllStocksByDate = async (req, res, next) => {
   try {
-    const { sectionId,date } = req.params;
-
-    const section = await Section.findById(sectionId).populate("stocks._id");
+    const { sectionId, date } = req.params;
+    const section = await Section.findById(sectionId).lean();
     if (!section) {
       throw new Error("Section not found");
     }
-    const inputDate = new Date(date).getDate();
-    const filteredStocks = section.stocks.filter(stock => {
-      const stockDate = new Date(stock.date).getDate(); 
-      return stockDate === inputDate; 
-    });
+    let filterStock = section.stocks.filter(
+      (s) => new Date(s.date).toString() === new Date(date).toString()
+    );
     
-    res
-      .status(200)
-      .json({
-        message: "Stocks retrieved successfully",
-        stocks: filteredStocks,
-      });
+     filterStock = await Promise.all(filterStock.map(async (v) => {
+      if (v._id) {
+        const stock = await Stock.findById(v._id);
+        return { ...v, _id: stock }; 
+      }
+      return v;
+    }));
+
+    res.status(200).json({
+      message: "Stocks retrieved successfully",
+      stocks: filterStock,
+    });
   } catch (error) {
-    console.error("Error retrieving stocks:", error);
+    next(error);
+  }
+};
+// Retrieve Stocks for a Section
+exports.getAllStocksGroupByDate = async (req, res, next) => {
+  try {
+    const { sectionId, status } = req.params;
+
+    const section = await Section.findById(sectionId);
+    const joinerDate = await StockJoining.findOne({
+      sectionId: sectionId,
+    }).lean();
+    if (!section || !joinerDate) {
+      throw new Error("Section not found");
+    }
+    const allDates = joinerDate.stockGroup.filter((v) => v.status === status);
+    const updateDetails = await Promise.all(
+      Array.isArray(allDates) 
+        ? allDates.map(async (v) => {
+            const stocks = section.stocks.filter(
+              (s) => new Date(s.date).toString() === new Date(v.date).toString()
+            );
+            const product = await Product.findOne({ date: v.date });
+            return { ...v, stocks, product };
+          })
+        : [] 
+    );
+    
+    res.status(200).json({
+      message: "Stocks retrieved successfully",
+      stocks: updateDetails,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+// Retrieve Stocks for a Section
+exports.getStocksGroupByDate = async (req, res, next) => {
+  try {
+    const { sectionId } = req.params;
+    const section = await Section.findById(sectionId);
+    const joinerDate = await StockJoining.findOne({
+      sectionId: sectionId,
+    }).lean();
+    if (!section || !joinerDate) {
+      throw new Error("Section not found");
+    }
+    const updateDetails = joinerDate.stockGroup.map((v) => {
+      const stocks = section.stocks.filter(
+        (s) => new Date(s.date).toString() === new Date(v.date).toString()
+      );
+      return { ...v, stocks };
+    });
+    res.status(200).json({
+      message: "Stocks retrieved successfully",
+      stocks: updateDetails,
+    });
+  } catch (error) {
     next(error);
   }
 };

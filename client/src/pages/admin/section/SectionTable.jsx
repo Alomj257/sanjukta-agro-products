@@ -21,18 +21,18 @@ const SectionTable = () => {
 
     useEffect(() => {
         const fetchSection = async () => {
-            setLoading(true); 
+            setLoading(true);
             try {
                 const response = await fetch(apis().getAllSections);
                 if (!response.ok) throw new Error('Failed to fetch sections');
-                
+
                 const result = await response.json();
                 if (result && result.sections && result.sections.length > 0) {
                     const updatedSections = await Promise.all(
                         result.sections.map(async (val) => {
-                            if(!val?.userId) return val;
-                            const res2 = await  fetch(apis().getUserById(val?.userId));
-                            const res=await res2.json();
+                            if (!val?.userId) return val;
+                            const res2 = await fetch(apis().getUserById(val?.userId));
+                            const res = await res2.json();
                             return {
                                 ...val,
                                 userEmail: res?.user?.email || '',
@@ -43,13 +43,13 @@ const SectionTable = () => {
                     const sortedSections = updatedSections.sort(
                         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
                     );
-        
+
                     setData(sortedSections);
                     setRecords(sortedSections);
-        
+
                     if (!toastShownRef.current) {
                         toastShownRef.current = true;
-                        toast.success("Sections fetched successfully!");
+                        // toast.success("Sections fetched successfully!");
                     }
                 } else {
                     console.error("No section data found", result);
@@ -62,11 +62,11 @@ const SectionTable = () => {
                 setLoading(false);
             }
         };
-        
 
-    fetchSection();
-}, []);
-console.log(records)
+
+        fetchSection();
+    }, []);
+    console.log(records)
     const columns = [
         {
             name: 'Section Name',
@@ -88,7 +88,7 @@ console.log(records)
             name: 'Distribute Stock',
             cell: row => (
                 <div>
-                    <button onClick={() => navigate("stocks",{state:{sectionData:row}})} className='distributBtn Btn'>Distr. Stock</button>
+                    <button onClick={() => navigate("stocks", { state: { sectionData: row } })} className='distributBtn Btn'>Distr. Stock</button>
                 </div>
             ),
             ignoreRowClick: true,
@@ -99,7 +99,7 @@ console.log(records)
             name: 'Actions',
             cell: row => (
                 <div>
-                        <button onClick={() => handleView(row)} className='readBtn Btn'><FaEye /></button>
+                    <button onClick={() => handleView(row)} className='readBtn Btn'><FaEye /></button>
                     <button onClick={() => handleEdit(row)} className='editBtn Btn'><MdEdit /></button>
                     <button onClick={() => handleDelete(row)} className='deleteBtn Btn'><MdDelete /></button>
                 </div>
@@ -111,9 +111,9 @@ console.log(records)
     ];
 
     const handleView = (row) => {
-        navigate(`/admin/section/view/${row._id}`,{state:{sectionId:row?._id}});
+        navigate(`/admin/section/view/${row._id}`, { state: { sectionId: row?._id } });
     };
-    
+
     const handleEdit = (row) => {
         navigate(`/admin/section/edit/${row._id}`, { state: { sectionData: row } });
     };
@@ -164,8 +164,8 @@ console.log(records)
                 </div>
             ) : (
 
-                    <DataTable columns={columns} data={records} />
-                ) 
+                <DataTable columns={columns} data={records} />
+            )
             }
 
             {showDeleteModal && (

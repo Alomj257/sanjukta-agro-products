@@ -20,13 +20,13 @@ const Sidebar = ({ role }) => {
             { name: 'Supplier', path: '/admin/supplier', icon: <FaUsers /> },
             { name: 'Stock', path: '/admin/stock', icon: <MdInventory /> },
             { name: 'Section', path: '/admin/section', icon: <FaPeopleGroup /> },
-            { name: 'New Stock', path: '/admin/stock/new', icon: <FaPeopleCarryBox /> },
-            { name: 'Logout', path: '/login', icon: <IoLogOut />},
+            { name: 'New Stock', path: '/admin/product', icon: <FaPeopleCarryBox /> },
+            { name: 'Logout', path: '/logout', icon: <IoLogOut />},
         ],
         user: [
-            { name: 'Dashboard', path: '/user/dashboard', icon: <MdSpaceDashboard /> },
+            // { name: 'Dashboard', path: '/user/dashboard', icon: <MdSpaceDashboard /> },
             { name: 'Section', path: '/user/section', icon: <MdInventory /> },
-            { name: 'Logout', path: '/login', icon: <IoLogOut />},
+            { name: 'Logout', path: '/logout', icon: <IoLogOut />},
         ],
     };
 

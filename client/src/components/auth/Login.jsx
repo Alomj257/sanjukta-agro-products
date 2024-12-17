@@ -54,7 +54,7 @@ const Login = () => {
                     navigate('/admin/dashboard');
                 } else if (result?.user?.role === 'user') {
                     console.log('Navigating to user dashboard...');
-                    navigate('/user/dashboard');
+                    navigate('/user/section');
                 }
             }
 
